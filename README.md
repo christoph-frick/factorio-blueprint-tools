@@ -3,7 +3,7 @@
 Tools to manipulate Factiorio blueprints (strings copied from the game) when
 playing without mods or providing functions not currently in mods.
 
-Online version: https://christoph-frick.github.io/factorio-blueprint-tools
+Online version: https://christoph-frick.github.io/factorio-blueprint-tools/
 
 Currently supported:
 
