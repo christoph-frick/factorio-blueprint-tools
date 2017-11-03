@@ -6,9 +6,6 @@
 
 (enable-console-print!)
 
-(defonce navigation-state
-  (atom "about"))
-
 (def ta-no-spellcheck
   {:autoComplete "off"
    :autoCorrect "off"
@@ -86,6 +83,21 @@
                                                         :value @tile-result
                                                         :onFocus #(.select (-> % .-target)))))))))))))
 
+(def navigations
+  [{:key "about" :icon "info-circle-o" :title "About" :component content-about}
+   {:key "tile" :icon "appstore-o" :title "Tile" :component content-tile}
+   {:key "settings " :icon "setting" :title "Settings (Vanilla 0.15)" :component content-settings}])
+
+(def navigations-by-key
+  (into {} (map (juxt :key identity)) navigations))
+
+(defonce navigation-state
+  (atom (-> navigations first :key)))
+
+(defn- menu-item
+  [{:keys [key icon title]}]
+  (ant/menu-item {:key key} [:span (ant/icon {:type icon}) title]))
+
 (rum/defc render < rum/reactive
   []
   (ant/layout {:style {:min-height "100vh"}}
@@ -95,14 +107,14 @@
                           :selectedKeys [(rum/react navigation-state)]
                           :onSelect #(reset! navigation-state (.-key %))
                           :style {:line-height "64px"}}
-                         (ant/menu-item {:key "about"} [:span (ant/icon {:type "info-circle-o"}) "About"])
-                         (ant/menu-item {:key "tile"} [:span (ant/icon {:type "appstore-o"}) "Tile"])
-                         (ant/menu-item {:key "settings"} [:span (ant/icon {:type "setting"}) "Settings (Vanilla 0.15)"])))
+                         (map menu-item navigations)))
               (ant/layout
-               (case (rum/react navigation-state)
-                 "tile" (content-tile)
-                 "about" (content-about)
-                 "settings" (content-settings))
+               (let [nav-key (rum/react navigation-state)]
+                 (if-let [nav-item (navigations-by-key nav-key)]
+                   ((:component nav-item))
+                   (do
+                     (content-about)
+                     (ant/message-error (str "Unknown navigation target: " nav-key)))))
                (ant/layout-footer
                 [:span
                  "Copyright © 2017 Christoph Frick"
