@@ -71,9 +71,10 @@
         tile-y (rum/cursor tile-settings-state ::tile-y)]
     (ant/layout-content
      {:style {:padding "1ex 1em"}}
-     [:h1 "Tile a blueprint N x M times"]
+     [:h1 "Tile a blueprint"]
      (ant/form
-      (ant/form-item {:label "Paste your blueprint string"}
+      (ant/form-item {:label "Blueprint string"
+                      :help "Copy a blueprint string from Factorio and paste it in this field"}
                      (ant/input-text-area (assoc ta-no-spellcheck
                                                  :value (rum/react blueprint-tile-state)
                                                  :onChange #(reset! blueprint-tile-state (-> % .-target .-value))
@@ -84,15 +85,16 @@
                     :type "error"}))
       (when (rum/react blueprint)
         (ant/form
-         (ant/form-item {:label "Tile n times on the X axis"}
+         (ant/form-item {:label "Tiles on X axis"}
                         (ant/input-number {:value (rum/react tile-x)
                                            :onChange #(reset! tile-x %)
                                            :min 2}))
-         (ant/form-item {:label "Tile m times on the Y axis"}
+         (ant/form-item {:label "Tiles on Y axis"}
                         (ant/input-number {:value (rum/react tile-y)
                                            :onChange #(reset! tile-y %)
                                            :min 2}))
-         (ant/form-item {:label "Result"}
+         (ant/form-item {:label "Result"
+                         :help "Copy this blueprint string and import in from the blueprint library in Factorio"}
                         (ant/input-text-area (assoc ta-no-spellcheck
                                                     :value (rum/react tile-result-state)
                                                     :onFocus #(.select (-> % .-target)))))))))))
