@@ -17,14 +17,15 @@
   (ant/layout-content
    {:style {:padding "1ex 1em"}}
    [:h1 "Factorio Blueprint Tools"]
-   [:p "Random tools to manipulate Factorio blueprint strings like tiling."]))
+   [:h2 "Random tools to manipulate Factorio blueprint strings"]
+   [:p "While there are already some of those functions built as mods to the game, one can not use mods while playing for the achievements"]))
 
 (rum/defc content-settings < rum/static
   []
   (ant/layout-content
    {:style {:padding "1ex 1em"}}
    [:h1 "Settings"]
-   (ant/alert {:message "Currenlty there is no way to change or add mods etc. for the sizes occupied by the entities."
+   (ant/alert {:message "Currently there is no way to change or add mods etc. for the sizes occupied by the entities."
                :showIcon true
                :type "warning"})
    (ant/form
