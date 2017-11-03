@@ -1,6 +1,6 @@
 (defproject factorio-blueprint-tools "0.1.0-SNAPSHOT"
   :description "Factorio Blueprint Tools"
-  :url "http://example.com/FIXME"
+  :url "https://github.com/christoph-frick/factorio-blueprint-tools"
   :min-lein-version "2.7.1"
 
   :dependencies [[org.clojure/clojure "1.9.0-alpha17"]
