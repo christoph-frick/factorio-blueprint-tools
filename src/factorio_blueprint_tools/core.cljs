@@ -26,62 +26,76 @@
    [:h1 "Settings"]
    (ant/alert {:message "Currenlty there is no way to change or add mods etc. for the sizes occupied by the entities."
                :showIcon true
-               :type "warning"
-               })
+               :type "warning"})
    (ant/form
     (ant/form-item {:label "Factorio entities"}
                    (ant/select {:value "vanilla-0.15"}
-                    (ant/select-option {:key "vanilla-0.15"} "Vanilla 0.15"))))))
+                               (ant/select-option {:key "vanilla-0.15"} "Vanilla 0.15"))))))
 
-(defn- save-decode-blueprint-string
-  [blueprint-string]
-  (try
-    (ser/decode blueprint-string)
-    (catch :default e
-      (ant/message-error (str "Could not load blueprint.  Please make sure to copy and paste the whole string from Factorio. (Error: " e ")"))
-      nil)))
+(defonce blueprint-tile-state
+  (atom ""))
 
-(defn- do-tile
-  [blueprint-string x-times y-times]
-  (when (seq blueprint-string)
-    (some-> blueprint-string
-            (save-decode-blueprint-string)
-            (tile x-times y-times)
-            (ser/encode))))
+(defonce tile-settings-state
+  (atom
+   {::blueprint-error nil ; maybe an error
+    ::blueprint nil ; the blueprint, unless there is an error
+    ::tile-x 2 ; initial values for the tiling
+    ::tile-y 2}))
+
+(defonce update-blueprint-tile-watch
+  (add-watch blueprint-tile-state ::update-blueprint-tile
+             (fn [_ _ _ blueprint-string]
+               (letfn [(update-fn
+                         [blueprint error]
+                         (swap! tile-settings-state assoc
+                                ::blueprint blueprint
+                                ::blueprint-error error))]
+                 (if (seq blueprint-string)
+                   (try
+                     (update-fn (ser/decode blueprint-string) nil)
+                     (catch :default e
+                       (update-fn nil (str "Could not load blueprint.  Please make sure to copy and paste the whole string from Factorio. (Error: " e ")"))))
+                   (update-fn nil nil))))))
+
+(defonce tile-result-state
+  (rum/derived-atom [tile-settings-state] ::tile-result
+                    (fn [{::keys [blueprint tile-x tile-y] :as tile-settings}]
+                      (some-> blueprint (tile tile-x tile-y) (ser/encode)))))
 
 (rum/defcs content-tile <
-  (rum/local "" ::blueprint-string)
-  (rum/local 2 ::tile-x)
-  (rum/local 2 ::tile-y)
-  [state]
-  (let [tile-result (rum/derived-atom [(::blueprint-string state) (::tile-x state) (::tile-y state)] ::tile-result
-                                      (fn [blueprint-string tile-x tile-y]
-                                        (do-tile blueprint-string tile-x tile-y)))]
+  rum/reactive
+  []
+  (let [blueprint (rum/cursor tile-settings-state ::blueprint)
+        blueprint-error (rum/cursor tile-settings-state ::blueprint-error)
+        tile-x (rum/cursor tile-settings-state ::tile-x)
+        tile-y (rum/cursor tile-settings-state ::tile-y)]
     (ant/layout-content
      {:style {:padding "1ex 1em"}}
      [:h1 "Tile a blueprint N x M times"]
      (ant/form
       (ant/form-item {:label "Paste your blueprint string"}
                      (ant/input-text-area (assoc ta-no-spellcheck
-                                                 :value @(::blueprint-string state)
-                                                 :onChange #(reset! (::blueprint-string state) (-> % .-target .-value))
+                                                 :value (rum/react blueprint-tile-state)
+                                                 :onChange #(reset! blueprint-tile-state (-> % .-target .-value))
                                                  :onFocus #(.select (-> % .-target)))))
-      (let [blueprint-string @(::blueprint-string state)]
-        (when (seq blueprint-string)
-          (when-let [blueprint (save-decode-blueprint-string blueprint-string)]
-            (ant/form
-             (ant/form-item {:label "Tile n times on the X axis"}
-                            (ant/input-number {:value @(::tile-x state)
-                                               :onChange #(reset! (::tile-x state) %)
-                                               :min 2}))
-             (ant/form-item {:label "Tile m times on the Y axis"}
-                            (ant/input-number {:value @(::tile-y state)
-                                               :onChange #(reset! (::tile-y state) %)
-                                               :min 2}))
-             (ant/form-item {:label "Result"}
-                            (ant/input-text-area (assoc ta-no-spellcheck
-                                                        :value @tile-result
-                                                        :onFocus #(.select (-> % .-target)))))))))))))
+      (when-let [error-message (rum/react blueprint-error)]
+        (ant/alert {:message error-message
+                    :showIcon true
+                    :type "error"}))
+      (when (rum/react blueprint)
+        (ant/form
+         (ant/form-item {:label "Tile n times on the X axis"}
+                        (ant/input-number {:value (rum/react tile-x)
+                                           :onChange #(reset! tile-x %)
+                                           :min 2}))
+         (ant/form-item {:label "Tile m times on the Y axis"}
+                        (ant/input-number {:value (rum/react tile-y)
+                                           :onChange #(reset! tile-y %)
+                                           :min 2}))
+         (ant/form-item {:label "Result"}
+                        (ant/input-text-area (assoc ta-no-spellcheck
+                                                    :value (rum/react tile-result-state)
+                                                    :onFocus #(.select (-> % .-target)))))))))))
 
 (def navigations
   [{:key "about" :icon "info-circle-o" :title "About" :component content-about}
