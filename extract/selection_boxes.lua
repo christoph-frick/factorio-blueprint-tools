@@ -2,10 +2,10 @@
 
 JSON = (loadfile "JSON.lua")()
 
-package.path = package.path .. ";" .. os.getenv("FACTORIO") .. "/data/core/lualib/?.lua"
-package.path = package.path .. ";" .. os.getenv("FACTORIO") .. "/data/base/?.lua"
+package.path = package.path .. ";" .. "/var/factorio-data/core/lualib/?.lua"
+package.path = package.path .. ";" .. "/var/factorio-data/base/?.lua"
 
--- most likely defined in Factorio itself; those are neede to load 0.15
+-- most likely defined in Factorio itself; those are neede to load 0.16
 defines = {}
 defines.direction = {}
 defines.direction.north	= 0
