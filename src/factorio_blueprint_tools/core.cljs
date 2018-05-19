@@ -31,8 +31,8 @@
                :type "warning"})
    (ant/form
     (ant/form-item {:label "Factorio entities"}
-                   (ant/select {:value "vanilla-0.15"}
-                               (ant/select-option {:key "vanilla-0.15"} "Vanilla 0.15"))))))
+                   (ant/select {:value "vanilla-0.16"}
+                               (ant/select-option {:key "vanilla-0.16"} "Vanilla 0.16"))))))
 
 (defn build-blueprint-watch
   [watch-name blueprint-string-atom blueprint-target-atom]
@@ -166,7 +166,7 @@
   [{:key "about" :icon "info-circle-o" :title "About" :component content-about}
    {:key "tile" :icon "appstore-o" :title "Tile" :component content-tile}
    {:key "upgrade" :icon "retweet" :title "Upgrade" :component content-upgrade}
-   {:key "settings " :icon "setting" :title "Settings (Vanilla 0.15)" :component content-settings}])
+   {:key "settings " :icon "setting" :title "Settings" :component content-settings}])
 
 (def navigations-by-key
   (into {} (map (juxt :key identity)) navigations))
