@@ -1,5 +1,6 @@
 (ns factorio-blueprint-tools.core
   (:require [factorio-blueprint-tools.tile :as tile]
+            [factorio-blueprint-tools.mirror :as mirror]
             [factorio-blueprint-tools.upgrade :as upgrade]
             [factorio-blueprint-tools.serialization :as ser]
             [antizer.rum :as ant]
@@ -106,6 +107,50 @@
                                                     :onFocus #(.select (-> % .-target)))))))))))
 
 ;; TODO: dedupe this more with tile and others to come
+(defonce blueprint-mirror-state
+  (atom ""))
+
+(defonce mirror-settings-state
+  (atom
+   {::blueprint-error nil
+    ::blueprint nil}))
+
+(defonce update-blueprint-mirror-watch
+  (build-blueprint-watch ::update-blueprint-mirror blueprint-mirror-state mirror-settings-state))
+
+(defonce mirror-result-state
+  (rum/derived-atom [mirror-settings-state] ::mirror-result
+                    (fn [{::keys [blueprint] :as mirror-settings}]
+                      (some-> blueprint (mirror/mirror) (ser/encode)))))
+
+(rum/defcs content-mirror <
+  rum/reactive
+  []
+  (let [blueprint (rum/cursor mirror-settings-state ::blueprint)
+        blueprint-error (rum/cursor mirror-settings-state ::blueprint-error)]
+    (ant/layout-content
+     {:style {:padding "1ex 1em"}}
+     [:h1 "Mirror a blueprint"]
+     (ant/form
+      (ant/form-item {:label "Blueprint string"
+                      :help "Copy a blueprint string from Factorio and paste it in this field"}
+                     (ant/input-text-area (assoc ta-no-spellcheck
+                                                 :value (rum/react blueprint-mirror-state)
+                                                 :onChange #(reset! blueprint-mirror-state (-> % .-target .-value))
+                                                 :onFocus #(.select (-> % .-target)))))
+      (when-let [error-message (rum/react blueprint-error)]
+        (ant/alert {:message error-message
+                    :showIcon true
+                    :type "error"}))
+      (when (rum/react blueprint)
+        (ant/form
+         (ant/form-item {:label "Result"
+                         :help "Copy this blueprint string and import in from the blueprint library in Factorio"}
+                        (ant/input-text-area (assoc ta-no-spellcheck
+                                                    :value (rum/react mirror-result-state)
+                                                    :onFocus #(.select (-> % .-target)))))))))))
+
+;; TODO: dedupe this more with tile and others to come
 (defonce blueprint-upgrade-state
   (atom ""))
 
@@ -165,6 +210,7 @@
 (def navigations
   [{:key "about" :icon "info-circle-o" :title "About" :component content-about}
    {:key "tile" :icon "appstore-o" :title "Tile" :component content-tile}
+   {:key "mirror" :icon "swap" :title "Mirror" :component content-mirror}
    {:key "upgrade" :icon "retweet" :title "Upgrade" :component content-upgrade}
    {:key "settings " :icon "setting" :title "Settings" :component content-settings}])
 
