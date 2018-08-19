@@ -243,7 +243,7 @@
                      (ant/message-error (str "Unknown navigation target: " nav-key)))))
                (ant/layout-footer
                 [:span
-                 "Copyright © 2017 Christoph Frick"
+                 "Copyright © 2018 Christoph Frick"
                  " "
                  [:a {:href "https://github.com/christoph-frick/factorio-blueprint-tools"} "https://github.com/christoph-frick/factorio-blueprint-tools"]]))))
 
