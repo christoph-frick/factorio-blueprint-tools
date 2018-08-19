@@ -1,5 +1,5 @@
 (ns factorio-blueprint-tools.core
-  (:require [factorio-blueprint-tools.tile :refer [tile]]
+  (:require [factorio-blueprint-tools.tile :as tile]
             [factorio-blueprint-tools.upgrade :as upgrade]
             [factorio-blueprint-tools.serialization :as ser]
             [antizer.rum :as ant]
@@ -66,7 +66,7 @@
 (defonce tile-result-state
   (rum/derived-atom [tile-settings-state] ::tile-result
                     (fn [{::keys [blueprint tile-x tile-y] :as tile-settings}]
-                      (some-> blueprint (tile tile-x tile-y) (ser/encode)))))
+                      (some-> blueprint (tile/tile tile-x tile-y) (ser/encode)))))
 
 (rum/defcs content-tile <
   rum/reactive
