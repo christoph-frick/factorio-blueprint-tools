@@ -11,4 +11,4 @@ Currently supported:
 1. **Mirror** : Mirrors the blueprint on the Y axis
 2. **Upgrade** : Upgrade (or downgrade) components of a blueprint (e.g. belts, assemblers, ...)
 
-Copyright © 2017 Christoph Frick <https://github.com/christoph-frick/factorio-blueprint-tools>
+Copyright © 2018 Christoph Frick <https://github.com/christoph-frick/factorio-blueprint-tools>
