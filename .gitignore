@@ -9,6 +9,7 @@ pom.xml
 .lein-deps-sum
 .lein-repl-history
 .lein-plugins/
+.lein-failures
 .repl
 .nrepl-port
 .cljs_rhino_repl
