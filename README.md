@@ -1,4 +1,4 @@
-# Factorio Blueprint Tools
+# [Factorio](https://factorio.com/) Blueprint Tools
 
 Tools to manipulate Factorio blueprints (strings copied from the game) when
 playing without mods or providing functions not currently in mods.
