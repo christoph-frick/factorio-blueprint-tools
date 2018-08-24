@@ -57,6 +57,12 @@
                   :help "Copy a blueprint string from Factorio and paste it in this field"}
                  (ant/input-text-area (merge ta-no-spellcheck config))))
 
+(defn form-item-output-blueprint
+  [config]
+  (ant/form-item {:label "Result"
+                  :help "Copy this blueprint string and import in from the blueprint library in Factorio"}
+                 (ant/input-text-area (merge ta-no-spellcheck config))))
+
 (defn alert-error
   [error-message]
   (ant/alert {:message error-message
@@ -107,11 +113,8 @@
                         (ant/input-number {:value (rum/react tile-y)
                                            :onChange #(reset! tile-y %)
                                            :min 2}))
-         (ant/form-item {:label "Result"
-                         :help "Copy this blueprint string and import in from the blueprint library in Factorio"}
-                        (ant/input-text-area (assoc ta-no-spellcheck
-                                                    :value (rum/react tile-result-state)
-                                                    :onFocus #(.select (-> % .-target)))))))))))
+         (form-item-output-blueprint {:value (rum/react tile-result-state)
+                                      :onFocus #(.select (-> % .-target))})))))))
 
 ;; TODO: dedupe this more with tile and others to come
 (defonce blueprint-mirror-state
@@ -146,11 +149,8 @@
         (alert-error error-message))
       (when (rum/react blueprint)
         (ant/form
-         (ant/form-item {:label "Result"
-                         :help "Copy this blueprint string and import in from the blueprint library in Factorio"}
-                        (ant/input-text-area (assoc ta-no-spellcheck
-                                                    :value (rum/react mirror-result-state)
-                                                    :onFocus #(.select (-> % .-target)))))))))))
+         (form-item-output-blueprint {:value (rum/react mirror-result-state)
+                                      :onFocus #(.select (-> % .-target))})))))))
 
 ;; TODO: dedupe this more with tile and others to come
 (defonce blueprint-upgrade-state
@@ -196,12 +196,8 @@
                                              :onChange #(swap! upgrade-config assoc from (-> % .-target .-value))}
                                             (for [option (upgrade/upgrades-by-key from)]
                                               (ant/radio {:key option :value option} (upgrade/upgrades-names option))))))
-          ; TODO: dedupe with tile
-          (ant/form-item {:label "Result"
-                          :help "Copy this blueprint string and import in from the blueprint library in Factorio"}
-                         (ant/input-text-area (assoc ta-no-spellcheck
-                                                     :value (rum/react upgrade-result-state)
-                                                     :onFocus #(.select (-> % .-target)))))))))))
+          (form-item-output-blueprint {:value (rum/react upgrade-result-state)
+                                       :onFocus #(.select (-> % .-target))})))))))
 
 (def navigations
   [{:key "about" :icon "info-circle-o" :title "About" :component content-about}
