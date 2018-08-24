@@ -137,20 +137,22 @@
   (atom ""))
 
 (defonce mirror-settings-state
-  (atom blueprint-state))
+  (atom
+   (assoc blueprint-state
+          ::direction :vertically)))
 
 (defonce update-blueprint-mirror-watch
   (build-blueprint-watch ::update-blueprint-mirror blueprint-mirror-state mirror-settings-state))
 
 (defonce mirror-result-state
   (rum/derived-atom [mirror-settings-state] ::mirror-result
-                    (fn [{::keys [blueprint] :as mirror-settings}]
-                      (some-> blueprint (mirror/mirror) (ser/encode)))))
+                    (fn [{::keys [blueprint direction] :as mirror-settings}]
+                      (some-> blueprint (mirror/mirror direction) (ser/encode)))))
 
 (rum/defcs content-mirror <
   rum/reactive
   []
-  (let [[blueprint blueprint-error] (blueprint-state-cursors mirror-settings-state)]
+  (let [[blueprint blueprint-error direction] (blueprint-state-cursors mirror-settings-state ::direction)]
     (ant/layout-content
      {:style {:padding "1ex 1em"}}
      [:h1 "Mirror a blueprint"]
@@ -160,6 +162,11 @@
         (alert-error error-message))
       (when (rum/react blueprint)
         (ant/form
+         (ant/form-item {:label "Direction"}
+                        (ant/radio-group {:value (rum/react direction)
+                                          :onChange #(reset! direction (-> % .-target .-value keyword))}
+                                         (for [[option label] [[:vertically "Vertically"] [:horizontally "Horizontally"]]]
+                                           (ant/radio {:key option :value option} label))))
          (form-item-output-blueprint mirror-result-state)))))))
 
 ;;; Upgrade
