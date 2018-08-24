@@ -19,27 +19,6 @@
    ::blueprint nil ; the blueprint, unless there is an error
    })
 
-(rum/defc content-about < rum/static
-  []
-  (ant/layout-content
-   {:style {:padding "1ex 1em"}}
-   [:h1 "Factorio Blueprint Tools"]
-   [:h2 "Random tools to manipulate Factorio blueprint strings"]
-   [:p "While there are already some of those functions built as mods to the game, one can not use mods while playing for the achievements"]))
-
-(rum/defc content-settings < rum/static
-  []
-  (ant/layout-content
-   {:style {:padding "1ex 1em"}}
-   [:h1 "Settings"]
-   (ant/alert {:message "Currently there is no way to change or add mods etc. for the sizes occupied by the entities."
-               :showIcon true
-               :type "warning"})
-   (ant/form
-    (ant/form-item {:label "Factorio entities"}
-                   (ant/select {:value "vanilla-0.16"}
-                               (ant/select-option {:key "vanilla-0.16"} "Vanilla 0.16"))))))
-
 (defn build-blueprint-watch
   [watch-name blueprint-string-atom blueprint-target-atom]
   (add-watch blueprint-string-atom watch-name
@@ -84,6 +63,31 @@
   (ant/alert {:message error-message
               :showIcon true
               :type "error"}))
+
+;;; About
+
+(rum/defc content-about < rum/static
+  []
+  (ant/layout-content
+   {:style {:padding "1ex 1em"}}
+   [:h1 "Factorio Blueprint Tools"]
+   [:h2 "Random tools to manipulate Factorio blueprint strings"]
+   [:p "While there are already some of those functions built as mods to the game, one can not use mods while playing for the achievements"]))
+
+;;; Settings 
+
+(rum/defc content-settings < rum/static
+  []
+  (ant/layout-content
+   {:style {:padding "1ex 1em"}}
+   [:h1 "Settings"]
+   (ant/alert {:message "Currently there is no way to change or add mods etc. for the sizes occupied by the entities."
+               :showIcon true
+               :type "warning"})
+   (ant/form
+    (ant/form-item {:label "Factorio entities"}
+                   (ant/select {:value "vanilla-0.16"}
+                               (ant/select-option {:key "vanilla-0.16"} "Vanilla 0.16"))))))
 
 ;;; Tile
 
@@ -199,6 +203,8 @@
                                              (for [option (upgrade/upgrades-by-key from)]
                                                (ant/radio {:key option :value option} (upgrade/upgrades-names option))))))
            (form-item-output-blueprint upgrade-result-state))))))))
+
+;;; Main
 
 (def navigations
   [{:key "about" :icon "info-circle-o" :title "About" :component content-about}
