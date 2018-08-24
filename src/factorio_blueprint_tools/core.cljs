@@ -179,21 +179,21 @@
      {:style {:padding "1ex 1em"}}
      [:h1 "Upgrade (or downgrade) a blueprint"]
      (ant/form
-      (form-item-input-blueprint blueprint-upgrade-state))
-     (when-let [error-message (rum/react blueprint-error)]
-       (alert-error error-message))
-     (when-let [blueprint (rum/react blueprint)]
-       (let [upgradable (upgrade/upgradeable-from-blueprint blueprint)
-             order (filter upgradable upgrade/upgrades-order)
-             cfg (rum/react upgrade-config)]
-         (ant/form
-          (for [from order]
-            (ant/form-item {:label (upgrade/upgrades-names from)}
-                           (ant/radio-group {:value (cfg from)
-                                             :onChange #(swap! upgrade-config assoc from (-> % .-target .-value))}
-                                            (for [option (upgrade/upgrades-by-key from)]
-                                              (ant/radio {:key option :value option} (upgrade/upgrades-names option))))))
-          (form-item-output-blueprint upgrade-result-state)))))))
+      (form-item-input-blueprint blueprint-upgrade-state)
+      (when-let [error-message (rum/react blueprint-error)]
+        (alert-error error-message))
+      (when-let [blueprint (rum/react blueprint)]
+        (let [upgradable (upgrade/upgradeable-from-blueprint blueprint)
+              order (filter upgradable upgrade/upgrades-order)
+              cfg (rum/react upgrade-config)]
+          (ant/form
+           (for [from order]
+             (ant/form-item {:label (upgrade/upgrades-names from)}
+                            (ant/radio-group {:value (cfg from)
+                                              :onChange #(swap! upgrade-config assoc from (-> % .-target .-value))}
+                                             (for [option (upgrade/upgrades-by-key from)]
+                                               (ant/radio {:key option :value option} (upgrade/upgrades-names option))))))
+           (form-item-output-blueprint upgrade-result-state))))))))
 
 (def navigations
   [{:key "about" :icon "info-circle-o" :title "About" :component content-about}
