@@ -51,6 +51,12 @@
                        (update-fn nil (str "Could not load blueprint.  Please make sure to copy and paste the whole string from Factorio. (Error: " e ")"))))
                    (update-fn nil nil))))))
 
+(defn blueprint-state-cursors
+  "Create rum/cursors for ::blueprint, ::blueprint-error, and each optional key passed and returns as vector in that order"
+  [state & ks]
+  (let [ks (concat [::blueprint ::blueprint-error] ks)]
+    (mapv #(rum/cursor state %) ks)))
+
 (defn form-item-input-blueprint
   [state]
   (ant/form-item {:label "Blueprint string"
@@ -95,10 +101,7 @@
 (rum/defcs content-tile <
   rum/reactive
   []
-  (let [blueprint (rum/cursor tile-settings-state ::blueprint)
-        blueprint-error (rum/cursor tile-settings-state ::blueprint-error)
-        tile-x (rum/cursor tile-settings-state ::tile-x)
-        tile-y (rum/cursor tile-settings-state ::tile-y)]
+  (let [[blueprint blueprint-error tile-x tile-y] (blueprint-state-cursors tile-settings-state ::tile-x ::tile-y)]
     (ant/layout-content
      {:style {:padding "1ex 1em"}}
      [:h1 "Tile a blueprint"]
@@ -138,8 +141,7 @@
 (rum/defcs content-mirror <
   rum/reactive
   []
-  (let [blueprint (rum/cursor mirror-settings-state ::blueprint)
-        blueprint-error (rum/cursor mirror-settings-state ::blueprint-error)]
+  (let [[blueprint blueprint-error] (blueprint-state-cursors mirror-settings-state)]
     (ant/layout-content
      {:style {:padding "1ex 1em"}}
      [:h1 "Mirror a blueprint"]
@@ -172,9 +174,7 @@
 (rum/defcs content-upgrade <
   rum/reactive
   []
-  (let [blueprint (rum/cursor upgrade-settings-state ::blueprint)
-        blueprint-error (rum/cursor upgrade-settings-state ::blueprint-error)
-        upgrade-config (rum/cursor upgrade-settings-state ::upgrade-config)]
+  (let [[blueprint blueprint-error upgrade-config] (blueprint-state-cursors upgrade-settings-state ::upgrade-config)]
     (ant/layout-content
      {:style {:padding "1ex 1em"}}
      [:h1 "Upgrade (or downgrade) a blueprint"]
