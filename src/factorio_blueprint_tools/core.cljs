@@ -52,21 +52,21 @@
                    (update-fn nil nil))))))
 
 (defn form-item-input-blueprint
-  [config]
+  [state]
   (ant/form-item {:label "Blueprint string"
                   :help "Copy a blueprint string from Factorio and paste it in this field"}
-                 (ant/input-text-area (merge
-                                       ta-no-spellcheck
-                                       {:onFocus #(.select (-> % .-target))}
-                                       config))))
+                 (ant/input-text-area (assoc ta-no-spellcheck
+                                             :value (rum/react state)
+                                             :onChange #(reset! state (-> % .-target .-value))
+                                             :onFocus #(.select (-> % .-target))))))
 
 (defn form-item-output-blueprint
-  [config]
+  [state]
   (ant/form-item {:label "Result"
                   :help "Copy this blueprint string and import in from the blueprint library in Factorio"}
-                 (ant/input-text-area (merge ta-no-spellcheck
-                                             {:onFocus #(.select (-> % .-target))}
-                                             config))))
+                 (ant/input-text-area (assoc ta-no-spellcheck
+                                             :value (rum/react state)
+                                             :onFocus #(.select (-> % .-target))))))
 
 (defn alert-error
   [error-message]
@@ -103,8 +103,7 @@
      {:style {:padding "1ex 1em"}}
      [:h1 "Tile a blueprint"]
      (ant/form
-      (form-item-input-blueprint {:value (rum/react blueprint-tile-state)
-                                  :onChange #(reset! blueprint-tile-state (-> % .-target .-value))})
+      (form-item-input-blueprint blueprint-tile-state)
       (when-let [error-message (rum/react blueprint-error)]
         (alert-error error-message))
       (when (rum/react blueprint)
@@ -117,7 +116,7 @@
                         (ant/input-number {:value (rum/react tile-y)
                                            :onChange #(reset! tile-y %)
                                            :min 2}))
-         (form-item-output-blueprint {:value (rum/react tile-result-state)})))))))
+         (form-item-output-blueprint tile-result-state)))))))
 
 ;; TODO: dedupe this more with tile and others to come
 (defonce blueprint-mirror-state
@@ -145,13 +144,12 @@
      {:style {:padding "1ex 1em"}}
      [:h1 "Mirror a blueprint"]
      (ant/form
-      (form-item-input-blueprint {:value (rum/react blueprint-mirror-state)
-                                  :onChange #(reset! blueprint-mirror-state (-> % .-target .-value))})
+      (form-item-input-blueprint blueprint-mirror-state)
       (when-let [error-message (rum/react blueprint-error)]
         (alert-error error-message))
       (when (rum/react blueprint)
         (ant/form
-         (form-item-output-blueprint {:value (rum/react mirror-result-state)})))))))
+         (form-item-output-blueprint mirror-result-state)))))))
 
 ;; TODO: dedupe this more with tile and others to come
 (defonce blueprint-upgrade-state
@@ -181,8 +179,7 @@
      {:style {:padding "1ex 1em"}}
      [:h1 "Upgrade (or downgrade) a blueprint"]
      (ant/form
-      (form-item-input-blueprint {:value (rum/react blueprint-upgrade-state)
-                                  :onChange #(reset! blueprint-upgrade-state (-> % .-target .-value))}))
+      (form-item-input-blueprint blueprint-upgrade-state))
      (when-let [error-message (rum/react blueprint-error)]
        (alert-error error-message))
      (when-let [blueprint (rum/react blueprint)]
@@ -196,7 +193,7 @@
                                              :onChange #(swap! upgrade-config assoc from (-> % .-target .-value))}
                                             (for [option (upgrade/upgrades-by-key from)]
                                               (ant/radio {:key option :value option} (upgrade/upgrades-names option))))))
-          (form-item-output-blueprint {:value (rum/react upgrade-result-state)})))))))
+          (form-item-output-blueprint upgrade-result-state)))))))
 
 (def navigations
   [{:key "about" :icon "info-circle-o" :title "About" :component content-about}
