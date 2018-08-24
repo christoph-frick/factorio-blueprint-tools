@@ -85,6 +85,8 @@
               :showIcon true
               :type "error"}))
 
+;;; Tile
+
 (defonce blueprint-tile-state
   (atom ""))
 
@@ -125,7 +127,8 @@
                                            :min 2}))
          (form-item-output-blueprint tile-result-state)))))))
 
-;; TODO: dedupe this more with tile and others to come
+;;; Mirror
+
 (defonce blueprint-mirror-state
   (atom ""))
 
@@ -155,7 +158,8 @@
         (ant/form
          (form-item-output-blueprint mirror-result-state)))))))
 
-;; TODO: dedupe this more with tile and others to come
+;;; Upgrade
+
 (defonce blueprint-upgrade-state
   (atom ""))
 
