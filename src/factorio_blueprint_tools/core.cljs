@@ -14,6 +14,11 @@
    :autoCapitalize "off"
    :spellCheck "false"})
 
+(def blueprint-state
+  {::blueprint-error nil ; maybe an error
+   ::blueprint nil ; the blueprint, unless there is an error
+   })
+
 (rum/defc content-about < rum/static
   []
   (ant/layout-content
@@ -85,10 +90,9 @@
 
 (defonce tile-settings-state
   (atom
-   {::blueprint-error nil ; maybe an error
-    ::blueprint nil ; the blueprint, unless there is an error
-    ::tile-x 2 ; initial values for the tiling
-    ::tile-y 2}))
+   (assoc blueprint-state
+          ::tile-x 2 ; initial values for the tiling
+          ::tile-y 2)))
 
 (defonce update-blueprint-tile-watch
   (build-blueprint-watch ::update-blueprint-tile blueprint-tile-state tile-settings-state))
@@ -126,9 +130,7 @@
   (atom ""))
 
 (defonce mirror-settings-state
-  (atom
-   {::blueprint-error nil
-    ::blueprint nil}))
+  (atom blueprint-state))
 
 (defonce update-blueprint-mirror-watch
   (build-blueprint-watch ::update-blueprint-mirror blueprint-mirror-state mirror-settings-state))
@@ -159,9 +161,8 @@
 
 (defonce upgrade-settings-state
   (atom
-   {::blueprint-error nil ; maybe an error
-    ::blueprint nil ; the blueprint, unless there is an error
-    ::upgrade-config upgrade/default-upgrade-config}))
+   (assoc blueprint-state
+          ::upgrade-config upgrade/default-upgrade-config)))
 
 (defonce update-blueprint-upgrade-watch
   (build-blueprint-watch ::update-blueprint-upgrade blueprint-upgrade-state upgrade-settings-state))
