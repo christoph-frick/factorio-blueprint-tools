@@ -57,6 +57,12 @@
                   :help "Copy a blueprint string from Factorio and paste it in this field"}
                  (ant/input-text-area (merge ta-no-spellcheck config))))
 
+(defn alert-error
+  [error-message]
+  (ant/alert {:message error-message
+              :showIcon true
+              :type "error"}))
+
 (defonce blueprint-tile-state
   (atom ""))
 
@@ -90,9 +96,7 @@
                                   :onChange #(reset! blueprint-tile-state (-> % .-target .-value))
                                   :onFocus #(.select (-> % .-target))})
       (when-let [error-message (rum/react blueprint-error)]
-        (ant/alert {:message error-message
-                    :showIcon true
-                    :type "error"}))
+        (alert-error error-message))
       (when (rum/react blueprint)
         (ant/form
          (ant/form-item {:label "Tiles on X axis"}
@@ -139,9 +143,7 @@
                                   :onChange #(reset! blueprint-mirror-state (-> % .-target .-value))
                                   :onFocus #(.select (-> % .-target))})
       (when-let [error-message (rum/react blueprint-error)]
-        (ant/alert {:message error-message
-                    :showIcon true
-                    :type "error"}))
+        (alert-error error-message))
       (when (rum/react blueprint)
         (ant/form
          (ant/form-item {:label "Result"
@@ -182,9 +184,7 @@
                                   :onChange #(reset! blueprint-upgrade-state (-> % .-target .-value))
                                   :onFocus #(.select (-> % .-target))}))
      (when-let [error-message (rum/react blueprint-error)]
-       (ant/alert {:message error-message
-                   :showIcon true
-                   :type "error"}))
+       (alert-error error-message))
      (when-let [blueprint (rum/react blueprint)]
        (let [upgradable (upgrade/upgradeable-from-blueprint blueprint)
              order (filter upgradable upgrade/upgrades-order)
