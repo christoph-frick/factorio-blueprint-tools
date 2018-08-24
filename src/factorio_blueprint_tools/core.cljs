@@ -51,6 +51,12 @@
                        (update-fn nil (str "Could not load blueprint.  Please make sure to copy and paste the whole string from Factorio. (Error: " e ")"))))
                    (update-fn nil nil))))))
 
+(defn form-item-input-blueprint
+  [config]
+  (ant/form-item {:label "Blueprint string"
+                  :help "Copy a blueprint string from Factorio and paste it in this field"}
+                 (ant/input-text-area (merge ta-no-spellcheck config))))
+
 (defonce blueprint-tile-state
   (atom ""))
 
@@ -80,12 +86,9 @@
      {:style {:padding "1ex 1em"}}
      [:h1 "Tile a blueprint"]
      (ant/form
-      (ant/form-item {:label "Blueprint string"
-                      :help "Copy a blueprint string from Factorio and paste it in this field"}
-                     (ant/input-text-area (assoc ta-no-spellcheck
-                                                 :value (rum/react blueprint-tile-state)
-                                                 :onChange #(reset! blueprint-tile-state (-> % .-target .-value))
-                                                 :onFocus #(.select (-> % .-target)))))
+      (form-item-input-blueprint {:value (rum/react blueprint-tile-state)
+                                  :onChange #(reset! blueprint-tile-state (-> % .-target .-value))
+                                  :onFocus #(.select (-> % .-target))})
       (when-let [error-message (rum/react blueprint-error)]
         (ant/alert {:message error-message
                     :showIcon true
@@ -132,12 +135,9 @@
      {:style {:padding "1ex 1em"}}
      [:h1 "Mirror a blueprint"]
      (ant/form
-      (ant/form-item {:label "Blueprint string"
-                      :help "Copy a blueprint string from Factorio and paste it in this field"}
-                     (ant/input-text-area (assoc ta-no-spellcheck
-                                                 :value (rum/react blueprint-mirror-state)
-                                                 :onChange #(reset! blueprint-mirror-state (-> % .-target .-value))
-                                                 :onFocus #(.select (-> % .-target)))))
+      (form-item-input-blueprint {:value (rum/react blueprint-mirror-state)
+                                  :onChange #(reset! blueprint-mirror-state (-> % .-target .-value))
+                                  :onFocus #(.select (-> % .-target))})
       (when-let [error-message (rum/react blueprint-error)]
         (ant/alert {:message error-message
                     :showIcon true
@@ -178,13 +178,9 @@
      {:style {:padding "1ex 1em"}}
      [:h1 "Upgrade (or downgrade) a blueprint"]
      (ant/form
-      ; TODO: dedupe with tile
-      (ant/form-item {:label "Blueprint string"
-                      :help "Copy a blueprint string from Factorio and paste it in this field"}
-                     (ant/input-text-area (assoc ta-no-spellcheck
-                                                 :value (rum/react blueprint-upgrade-state)
-                                                 :onChange #(reset! blueprint-upgrade-state (-> % .-target .-value))
-                                                 :onFocus #(.select (-> % .-target))))))
+      (form-item-input-blueprint {:value (rum/react blueprint-upgrade-state)
+                                  :onChange #(reset! blueprint-upgrade-state (-> % .-target .-value))
+                                  :onFocus #(.select (-> % .-target))}))
      (when-let [error-message (rum/react blueprint-error)]
        (ant/alert {:message error-message
                    :showIcon true
