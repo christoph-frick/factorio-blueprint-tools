@@ -18,9 +18,10 @@
   [x y]
   [x y])
 
-(defn box 
-  [a b]
-  [a b])
+(defn box
+  [[ax ay] [bx by]]
+  [(coord (min ax bx) (min ay by))
+   (coord (max ax bx) (max ay by))])
 
 (defn rotate-coord 
   [[x y] dir]
