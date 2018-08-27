@@ -2,6 +2,7 @@
   (:require [factorio-blueprint-tools.tile :as tile]
             [factorio-blueprint-tools.mirror :as mirror]
             [factorio-blueprint-tools.upgrade :as upgrade]
+            [factorio-blueprint-tools.preview :as preview]
             [factorio-blueprint-tools.serialization :as ser]
             [antizer.rum :as ant]
             [rum.core :as rum]))
@@ -106,7 +107,10 @@
 (defonce tile-result-state
   (rum/derived-atom [tile-settings-state] ::tile-result
                     (fn [{::keys [blueprint tile-x tile-y] :as tile-settings}]
-                      (some-> blueprint (tile/tile tile-x tile-y) (ser/encode)))))
+                      (some-> blueprint (tile/tile tile-x tile-y)))))
+
+(defonce tile-result-serialized-state
+  (rum/derived-atom [tile-result-state] ::tile-result-serialized #(some-> % ser/encode)))
 
 (rum/defcs content-tile <
   rum/reactive
@@ -118,8 +122,9 @@
      (ant/form
       (form-item-input-blueprint blueprint-tile-state)
       (when-let [error-message (rum/react blueprint-error)]
-        (alert-error error-message))
-      (when (rum/react blueprint)
+        (alert-error error-message)))
+     (when (rum/react blueprint)
+       [:div
         (ant/form
          (ant/form-item {:label "Tiles on X axis"}
                         (ant/input-number {:value (rum/react tile-x)
@@ -129,7 +134,8 @@
                         (ant/input-number {:value (rum/react tile-y)
                                            :onChange #(reset! tile-y %)
                                            :min 2}))
-         (form-item-output-blueprint tile-result-state)))))))
+         (form-item-output-blueprint tile-result-serialized-state))
+        (preview/preview (rum/react tile-result-state))]))))
 
 ;;; Mirror
 
@@ -147,7 +153,10 @@
 (defonce mirror-result-state
   (rum/derived-atom [mirror-settings-state] ::mirror-result
                     (fn [{::keys [blueprint direction] :as mirror-settings}]
-                      (some-> blueprint (mirror/mirror direction) (ser/encode)))))
+                      (some-> blueprint (mirror/mirror direction)))))
+
+(defonce mirror-result-serialized-state
+  (rum/derived-atom [mirror-result-state] ::mirror-result-serialized #(some-> % ser/encode)))
 
 (rum/defcs content-mirror <
   rum/reactive
@@ -159,15 +168,17 @@
      (ant/form
       (form-item-input-blueprint blueprint-mirror-state)
       (when-let [error-message (rum/react blueprint-error)]
-        (alert-error error-message))
-      (when (rum/react blueprint)
+        (alert-error error-message)))
+     (when (rum/react blueprint)
+       [:div
         (ant/form
          (ant/form-item {:label "Direction"}
                         (ant/radio-group {:value (rum/react direction)
                                           :onChange #(reset! direction (-> % .-target .-value keyword))}
                                          (for [[option label] [[:vertically "Vertically"] [:horizontally "Horizontally"]]]
                                            (ant/radio {:key option :value option} label))))
-         (form-item-output-blueprint mirror-result-state)))))))
+         (form-item-output-blueprint mirror-result-serialized-state))
+        (preview/preview (rum/react mirror-result-state))]))))
 
 ;;; Upgrade
 
@@ -185,7 +196,10 @@
 (defonce upgrade-result-state
   (rum/derived-atom [upgrade-settings-state] ::upgrade-result
                     (fn [{::keys [blueprint upgrade-config] :as upgrade-settings}]
-                      (some->> blueprint (upgrade/upgrade-blueprint upgrade-config) (ser/encode)))))
+                      (some->> blueprint (upgrade/upgrade-blueprint upgrade-config)))))
+
+(defonce upgrade-result-serialized-state
+  (rum/derived-atom [upgrade-result-state] ::upgrade-result-serialized #(some-> % ser/encode)))
 
 (rum/defcs content-upgrade <
   rum/reactive
@@ -197,8 +211,9 @@
      (ant/form
       (form-item-input-blueprint blueprint-upgrade-state)
       (when-let [error-message (rum/react blueprint-error)]
-        (alert-error error-message))
-      (when-let [blueprint (rum/react blueprint)]
+        (alert-error error-message)))
+     (when-let [blueprint (rum/react blueprint)]
+       [:div
         (let [upgradable (upgrade/upgradeable-from-blueprint blueprint)
               order (filter upgradable upgrade/upgrades-order)
               cfg (rum/react upgrade-config)]
@@ -209,7 +224,8 @@
                                               :onChange #(swap! upgrade-config assoc from (-> % .-target .-value))}
                                              (for [option (upgrade/upgrades-by-key from)]
                                                (ant/radio {:key option :value option} (upgrade/upgrades-names option))))))
-           (form-item-output-blueprint upgrade-result-state))))))))
+           (form-item-output-blueprint upgrade-result-serialized-state)))
+        (preview/preview (rum/react upgrade-result-state))]))))
 
 ;;; Main
 
