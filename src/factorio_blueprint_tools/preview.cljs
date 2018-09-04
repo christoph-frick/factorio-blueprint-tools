@@ -18,8 +18,8 @@
   [blueprint]
   (let [entities (-> blueprint :blueprint :entities)
         [[ax1 ay1] [ax2 ay2]] (blueprint/entities-area blueprint)]
-    [:svg
-     {:width "20em" :height "20em" :viewBox (str ax1 " " ay1 " " (- ax2 ax1) " " (- ay2 ay1)) :style {:outline "1px solid black" :background-color "#fff"}}
+    [:span {:style {:padding-left "24px"}} [:svg
+     {:width "10em" :height "10em" :viewBox (str ax1 " " ay1 " " (- ax2 ax1) " " (- ay2 ay1)) :style {:vertical-align "top" :outline "1px solid #d9d9d9" :background-color "#fff"}}
      [:g
       (for [e entities
             :let [[[x1 y1] [x2 y2]] (blueprint/entity-area e)
@@ -27,4 +27,4 @@
                   height (- y2 y1)]]
         [:g {:stroke "black" :stroke-width "0.5%"}
          [:rect {:fill (color-by-entity-name (:name e)) :x x1 :y y1 :width width :height height}]
-         [:path {:d "M 0,-0.1 -0.1,0 0.1,0 z" :transform (str "translate(" (-> e :position :x) "," (-> e :position :y) ")" "rotate(" (* 45 (:direction e 0)) ")")}]])]]))
+         [:path {:d "M 0,-0.1 -0.1,0 0.1,0 z" :transform (str "translate(" (-> e :position :x) "," (-> e :position :y) ")" "rotate(" (* 45 (:direction e 0)) ")")}]])]]]))

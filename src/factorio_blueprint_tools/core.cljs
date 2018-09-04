@@ -4,6 +4,7 @@
             [factorio-blueprint-tools.upgrade :as upgrade]
             [factorio-blueprint-tools.preview :as preview]
             [factorio-blueprint-tools.serialization :as ser]
+            [clojure.string :as str]
             [antizer.rum :as ant]
             [rum.core :as rum]
             [citrus.core :as citrus]))
@@ -20,6 +21,15 @@
   {::blueprint-error nil ; maybe an error
    ::blueprint nil ; the blueprint, unless there is an error
    })
+
+(defn decode-blueprint
+  [encoded-blueprint]
+  (if (or (not encoded-blueprint) (str/blank? encoded-blueprint))
+    [nil nil]
+    (try
+      [(ser/decode encoded-blueprint) nil]
+      (catch :default e
+        [nil e]))))
 
 (defn build-blueprint-watch
   [watch-name blueprint-string-atom blueprint-target-atom]
@@ -97,52 +107,59 @@
                    (ant/select {:value "vanilla-0.16"}
                                (ant/select-option {:key "vanilla-0.16"} "Vanilla 0.16"))))))
 
+;;; Tools
+
+(rum/defc BlueprintInput <
+  rum/reactive
+  [r controller]
+  (ant/form-item {:label "Blueprint string"
+                  :help "Copy a blueprint string from Factorio and paste it in this field"}
+                 [:div
+                  (ant/input-text-area (assoc ta-no-spellcheck
+                                              :style {:height "10em" :width "calc(100% - 10em - 24px)"}
+                                              :value (rum/react (citrus/subscription r [controller :input :encoded]))
+                                              :onChange #(citrus/dispatch! r controller :set-blueprint (-> % .-target .-value))
+                                              :onFocus #(.select (-> % .-target))))
+                  (when-let [blueprint (rum/react (citrus/subscription r [controller :input :blueprint]))]
+                    (preview/preview blueprint))]
+                 (when-let [error (rum/react (citrus/subscription r [controller :input :error]))]
+                   (alert-error (str "Could not load blueprint.  Please make sure to copy and paste the whole string from Factorio. (Error: " error ")")))))
+
+(rum/defc BlueprintOutput <
+  rum/reactive
+  [r controller]
+  (ant/form-item {:label "Result"
+                  :help "Copy this blueprint string and import in from the blueprint library in Factorio"}
+                 [:div
+                  (ant/input-text-area (assoc ta-no-spellcheck
+                                              :style {:height "10em" :width "calc(100% - 10em - 24px)"}
+                                              :value (rum/react (citrus/subscription r [controller :output :encoded]))
+                                              :onFocus #(.select (-> % .-target))))
+                  (when-let [blueprint (rum/react (citrus/subscription r [controller :output :blueprint]))]
+                    (preview/preview blueprint))]))
+
 ;;; Tile
 
-(defonce blueprint-tile-state
-  (atom ""))
-
-(defonce tile-settings-state
-  (atom
-   (assoc blueprint-state
-          ::tile-x 2 ; initial values for the tiling
-          ::tile-y 2)))
-
-(defonce update-blueprint-tile-watch
-  (build-blueprint-watch ::update-blueprint-tile blueprint-tile-state tile-settings-state))
-
-(defonce tile-result-state
-  (rum/derived-atom [tile-settings-state] ::tile-result
-                    (fn [{::keys [blueprint tile-x tile-y] :as tile-settings}]
-                      (some-> blueprint (tile/tile tile-x tile-y)))))
-
-(defonce tile-result-serialized-state
-  (rum/derived-atom [tile-result-state] ::tile-result-serialized #(some-> % ser/encode)))
-
-(rum/defcs ContentTile <
+(rum/defc ContentTile <
   rum/reactive
-  []
-  (let [[blueprint blueprint-error tile-x tile-y] (blueprint-state-cursors tile-settings-state ::tile-x ::tile-y)]
-    (ant/layout-content
-     {:style {:padding "1ex 1em"}}
-     [:h2 "Tile a blueprint"]
-     (ant/form
-      (form-item-input-blueprint blueprint-tile-state)
-      (when-let [error-message (rum/react blueprint-error)]
-        (alert-error error-message)))
-     (when (rum/react blueprint)
-       [:div
-        (ant/form
-         (ant/form-item {:label "Tiles on X axis"}
-                        (ant/input-number {:value (rum/react tile-x)
-                                           :onChange #(reset! tile-x %)
-                                           :min 1}))
-         (ant/form-item {:label "Tiles on Y axis"}
-                        (ant/input-number {:value (rum/react tile-y)
-                                           :onChange #(reset! tile-y %)
-                                           :min 1}))
-         (form-item-output-blueprint tile-result-serialized-state))
-        (preview/preview (rum/react tile-result-state))]))))
+  [r]
+  (ant/layout-content
+   {:style {:padding "1ex 1em"}}
+   [:h2 "Tile a blueprint"]
+   (ant/form
+    (BlueprintInput r :tile))
+   (when (rum/react (citrus/subscription r [:tile :input :blueprint]))
+     [:div
+      (ant/form
+       (ant/form-item {:label "Tiles on X axis"}
+                      (ant/input-number {:value (rum/react (citrus/subscription r [:tile :config :tile-x]))
+                                         :onChange #(citrus/dispatch! r :tile :set-config :tile-x %)
+                                         :min 1}))
+       (ant/form-item {:label "Tiles on Y axis"}
+                      (ant/input-number {:value (rum/react (citrus/subscription r [:tile :config :tile-y]))
+                                         :onChange #(citrus/dispatch! r :tile :set-config :tile-y %)
+                                         :min 1}))
+       (BlueprintOutput r :tile))])))
 
 ;;; Mirror
 
@@ -260,10 +277,64 @@
 
 ;
 
+(def default-tool-state
+  {:input {:encoded nil
+           :blueprint nil
+           :error nil}
+   :config {}
+   :output {:encoded nil
+            :blueprint nil}})
+
+(def default-tile-config
+  {:tile-x 2
+   :tile-y 2})
+
+(defn- set-blueprint
+  [state encoded-blueprint]
+  (let [[blueprint error] (decode-blueprint encoded-blueprint)]
+    (update state :input assoc :encoded encoded-blueprint :blueprint blueprint :error error)))
+
+(defn- set-config
+  [state k v]
+  (update state :config assoc k v))
+
+(defn- update-result
+  [state update-fn]
+  (let [blueprint (some-> state :input :blueprint)
+        config (or (some-> state :config) default-tile-config)
+        result (some-> blueprint (update-fn config))
+        encoded-result (some-> result ser/encode)]
+    (update state :output assoc :blueprint result :encoded encoded-result)))
+
+(defmulti tile identity)
+
+(defmethod tile :init []
+  {:state (assoc default-tool-state
+                 :config default-tile-config)})
+
+(defmethod tile :set-blueprint [r [encoded-blueprint] state]
+  {:state (set-blueprint state encoded-blueprint)
+   :dispatch [[:tile :update]]})
+
+(defmethod tile :set-config [r [k v] state]
+  {:state (set-config state k v)
+   :dispatch [[:tile :update]]})
+
+(defmethod tile :update [_ _ state]
+  {:state (update-result state
+                         (fn tile [blueprint {:keys [tile-x tile-y] :as config}]
+                           (tile/tile blueprint tile-x tile-y)))})
+
+(defn dispatch [r _ events]
+  (doseq [[ctrl & args] events]
+    (apply citrus/dispatch! (into [r ctrl] args))))
+
 (defonce reconciler
   (citrus/reconciler
    {:state (atom {})
-    :controllers {:navigation navigation}}))
+    :controllers {:navigation navigation
+                  :tile tile}
+    :effect-handlers {:dispatch dispatch}}))
 
 ;;; Main content
 
@@ -302,9 +373,9 @@
                           (ant/layout
                            (let [nav-key (rum/react (citrus/subscription r [:navigation]))]
                              (if-let [nav-item (navigations-by-key nav-key)]
-                               ((:component nav-item))
+                               ((:component nav-item) r)
                                (do
-                                 (ContentAbout)
+                                 (ContentAbout r)
                                  (ant/message-error (str "Unknown navigation target: " nav-key)))))
                            (AppFooter)))))
 
