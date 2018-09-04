@@ -71,7 +71,6 @@
   []
   (ant/layout-content
    {:style {:padding "1ex 1em"}}
-   [:h1 "Factorio Blueprint Tools"]
    [:h2 "Random tools to manipulate Factorio blueprint strings"]
    [:p "While there are already some of those functions built as mods to the game, one can not use mods while playing for the achievements"]
    [:h3 "Instructions"]
@@ -88,7 +87,7 @@
   []
   (ant/layout-content
    {:style {:padding "1ex 1em"}}
-   [:h1 "Settings"]
+   [:h2 "Settings"]
    (ant/alert {:message "Currently there is no way to change or add mods etc. for the sizes occupied by the entities."
                :showIcon true
                :type "warning"})
@@ -125,7 +124,7 @@
   (let [[blueprint blueprint-error tile-x tile-y] (blueprint-state-cursors tile-settings-state ::tile-x ::tile-y)]
     (ant/layout-content
      {:style {:padding "1ex 1em"}}
-     [:h1 "Tile a blueprint"]
+     [:h2 "Tile a blueprint"]
      (ant/form
       (form-item-input-blueprint blueprint-tile-state)
       (when-let [error-message (rum/react blueprint-error)]
@@ -171,7 +170,7 @@
   (let [[blueprint blueprint-error direction] (blueprint-state-cursors mirror-settings-state ::direction)]
     (ant/layout-content
      {:style {:padding "1ex 1em"}}
-     [:h1 "Mirror a blueprint"]
+     [:h2 "Mirror a blueprint"]
      (ant/form
       (form-item-input-blueprint blueprint-mirror-state)
       (when-let [error-message (rum/react blueprint-error)]
@@ -214,7 +213,7 @@
   (let [[blueprint blueprint-error upgrade-config] (blueprint-state-cursors upgrade-settings-state ::upgrade-config)]
     (ant/layout-content
      {:style {:padding "1ex 1em"}}
-     [:h1 "Upgrade (or downgrade) a blueprint"]
+     [:h2 "Upgrade (or downgrade) a blueprint"]
      (ant/form
       (form-item-input-blueprint blueprint-upgrade-state)
       (when-let [error-message (rum/react blueprint-error)]
@@ -240,7 +239,7 @@
   [{:key "about" :icon "info-circle-o" :title "About" :component content-about}
    {:key "tile" :icon "appstore-o" :title "Tile" :component content-tile}
    {:key "mirror" :icon "swap" :title "Mirror" :component content-mirror}
-   {:key "upgrade" :icon "retweet" :title "Upgrade" :component content-upgrade}
+   {:key "upgrade" :icon "tool" :title "Upgrade" :component content-upgrade}
    {:key "settings " :icon "setting" :title "Settings" :component content-settings}])
 
 (def navigations-by-key
@@ -256,25 +255,35 @@
 (rum/defc render < rum/reactive
   []
   (ant/layout {:style {:min-height "100vh"}}
-              (ant/layout-sider
-               (ant/menu {:theme "dark"
-                          :mode "inline"
-                          :selectedKeys [(rum/react navigation-state)]
-                          :onSelect #(reset! navigation-state (.-key %))
-                          :style {:line-height "64px"}}
-                         (map menu-item navigations)))
-              (ant/layout
-               (let [nav-key (rum/react navigation-state)]
-                 (if-let [nav-item (navigations-by-key nav-key)]
-                   ((:component nav-item))
-                   (do
-                     (content-about)
-                     (ant/message-error (str "Unknown navigation target: " nav-key)))))
-               (ant/layout-footer
-                [:span
-                 "Copyright © 2018 Christoph Frick"
-                 " "
-                 [:a {:href "https://github.com/christoph-frick/factorio-blueprint-tools"} "https://github.com/christoph-frick/factorio-blueprint-tools"]]))))
+
+              (ant/layout-header
+               {:style {:padding-left "24px"}}
+               [:h1
+                {:style {:color "white"}}
+                (ant/icon {:type "setting"})
+                "Factorio Blueprint Tools"])
+
+              (ant/layout (ant/layout-sider
+                           {:theme "light"}
+                           (ant/menu {:theme "light"
+                                      :mode "inline"
+                                      :selectedKeys [(rum/react navigation-state)]
+                                      :onSelect #(reset! navigation-state (.-key %))
+                                      :style {:min-height "calc(100vh-64px)"}}
+                                     (map menu-item navigations)))
+                          (ant/layout
+                           (let [nav-key (rum/react navigation-state)]
+                             (if-let [nav-item (navigations-by-key nav-key)]
+                               ((:component nav-item))
+                               (do
+                                 (content-about)
+                                 (ant/message-error (str "Unknown navigation target: " nav-key)))))
+                           (ant/layout-footer
+                            {:style {:text-align "center"}}
+                            [:span
+                             "Copyright © 2018 Christoph Frick"
+                             " "
+                             [:a {:href "https://github.com/christoph-frick/factorio-blueprint-tools"} "https://github.com/christoph-frick/factorio-blueprint-tools"]])))))
 
 (defn init!
   []
