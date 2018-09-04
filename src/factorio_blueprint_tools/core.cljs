@@ -73,7 +73,14 @@
    {:style {:padding "1ex 1em"}}
    [:h1 "Factorio Blueprint Tools"]
    [:h2 "Random tools to manipulate Factorio blueprint strings"]
-   [:p "While there are already some of those functions built as mods to the game, one can not use mods while playing for the achievements"]))
+   [:p "While there are already some of those functions built as mods to the game, one can not use mods while playing for the achievements"]
+   [:h3 "Instructions"]
+   [:p "Pick a tool on the left hand side in the menu:"]
+   [:ul
+    [:li [:em "Tile"] ": Arrange copies of the blueprint in a grid.  E.g. take a six electric miner blueprint and tile 15x15 to cover even the biggest resource fields"]
+    [:li [:em "Mirror"] ": Mirror the blueprint either vertically or horizontally"]
+    [:li [:em "Upgrade"] ": Decide what common upgradeable entities (e.g. inserters) to upgrade.  Also supports downgrading (e.g. you have a great blueprint but not the tech yet)"]]
+   [:p "Then paste the blueprint string either from the game or from a different place into the input field, adjust the settings, and finally copy the final blueprint and import it into Factorio"]))
 
 ;;; Settings 
 
