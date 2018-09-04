@@ -163,46 +163,24 @@
 
 ;;; Mirror
 
-(defonce blueprint-mirror-state
-  (atom ""))
-
-(defonce mirror-settings-state
-  (atom
-   (assoc blueprint-state
-          ::direction :vertically)))
-
-(defonce update-blueprint-mirror-watch
-  (build-blueprint-watch ::update-blueprint-mirror blueprint-mirror-state mirror-settings-state))
-
-(defonce mirror-result-state
-  (rum/derived-atom [mirror-settings-state] ::mirror-result
-                    (fn [{::keys [blueprint direction] :as mirror-settings}]
-                      (some-> blueprint (mirror/mirror direction)))))
-
-(defonce mirror-result-serialized-state
-  (rum/derived-atom [mirror-result-state] ::mirror-result-serialized #(some-> % ser/encode)))
-
-(rum/defcs ContentMirror <
+(rum/defc ContentMirror <
   rum/reactive
-  []
-  (let [[blueprint blueprint-error direction] (blueprint-state-cursors mirror-settings-state ::direction)]
-    (ant/layout-content
-     {:style {:padding "1ex 1em"}}
-     [:h2 "Mirror a blueprint"]
-     (ant/form
-      (form-item-input-blueprint blueprint-mirror-state)
-      (when-let [error-message (rum/react blueprint-error)]
-        (alert-error error-message)))
-     (when (rum/react blueprint)
-       [:div
-        (ant/form
-         (ant/form-item {:label "Direction"}
-                        (ant/radio-group {:value (rum/react direction)
-                                          :onChange #(reset! direction (-> % .-target .-value keyword))}
-                                         (for [[option label] [[:vertically "Vertically"] [:horizontally "Horizontally"]]]
-                                           (ant/radio {:key option :value option} label))))
-         (form-item-output-blueprint mirror-result-serialized-state))
-        (preview/preview (rum/react mirror-result-state))]))))
+  [r]
+  (ant/layout-content
+   {:style {:padding "1ex 1em"}}
+   [:h2 "Mirror a blueprint"]
+   (ant/form
+    (BlueprintInput r :mirror))
+   (when (rum/react (citrus/subscription r [:mirror :input :blueprint]))
+     [:div
+      (ant/form
+       (ant/form-item {:label "Direction"}
+                      (ant/radio-group {:value (rum/react (citrus/subscription r [:mirror :config :direction]))
+                                        :onChange #(citrus/dispatch! r :mirror :set-config :direction (-> % .-target .-value keyword))}
+                                       (for [[option label] [[:vertically "Vertically"] [:horizontally "Horizontally"]]]
+                                         (ant/radio {:key option :value option} label))))
+
+       (BlueprintOutput r :mirror))])))
 
 ;;; Upgrade
 
@@ -285,10 +263,6 @@
    :output {:encoded nil
             :blueprint nil}})
 
-(def default-tile-config
-  {:tile-x 2
-   :tile-y 2})
-
 (defn- set-blueprint
   [state encoded-blueprint]
   (let [[blueprint error] (decode-blueprint encoded-blueprint)]
@@ -299,12 +273,17 @@
   (update state :config assoc k v))
 
 (defn- update-result
-  [state update-fn]
+  [state default-config update-fn]
   (let [blueprint (some-> state :input :blueprint)
-        config (or (some-> state :config) default-tile-config)
+        config (or (some-> state :config) default-config)
         result (some-> blueprint (update-fn config))
         encoded-result (some-> result ser/encode)]
     (update state :output assoc :blueprint result :encoded encoded-result)))
+
+
+(def default-tile-config
+  {:tile-x 2
+   :tile-y 2})
 
 (defmulti tile identity)
 
@@ -322,8 +301,33 @@
 
 (defmethod tile :update [_ _ state]
   {:state (update-result state
+                         default-tile-config
                          (fn tile [blueprint {:keys [tile-x tile-y] :as config}]
                            (tile/tile blueprint tile-x tile-y)))})
+
+(def default-mirror-config
+  {:direction :vertically})
+
+(defmulti mirror identity)
+
+(defmethod mirror :init []
+  {:state (assoc default-tool-state
+                 :config default-mirror-config)})
+
+(defmethod mirror :set-blueprint [r [encoded-blueprint] state]
+  {:state (set-blueprint state encoded-blueprint)
+   :dispatch [[:mirror :update]]})
+
+(defmethod mirror :set-config [r [k v] state]
+  {:state (set-config state k v)
+   :dispatch [[:mirror :update]]})
+
+(defmethod mirror :update [_ _ state]
+  {:state (update-result state
+                         default-mirror-config
+                         (fn mirror [blueprint {:keys [direction] :as config}]
+                           (mirror/mirror blueprint direction)))})
+
 
 (defn dispatch [r _ events]
   (doseq [[ctrl & args] events]
@@ -333,7 +337,8 @@
   (citrus/reconciler
    {:state (atom {})
     :controllers {:navigation navigation
-                  :tile tile}
+                  :tile tile
+                  :mirror mirror}
     :effect-handlers {:dispatch dispatch}}))
 
 ;;; Main content
