@@ -5,7 +5,8 @@
             [factorio-blueprint-tools.preview :as preview]
             [factorio-blueprint-tools.serialization :as ser]
             [antizer.rum :as ant]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [citrus.core :as citrus]))
 
 (enable-console-print!)
 
@@ -67,7 +68,7 @@
 
 ;;; About
 
-(rum/defc content-about < rum/static
+(rum/defc ContentAbout < rum/static
   []
   (ant/layout-content
    {:style {:padding "1ex 1em"}}
@@ -83,7 +84,7 @@
 
 ;;; Settings 
 
-(rum/defc content-settings < rum/static
+(rum/defc ContentSettings < rum/static
   []
   (ant/layout-content
    {:style {:padding "1ex 1em"}}
@@ -118,7 +119,7 @@
 (defonce tile-result-serialized-state
   (rum/derived-atom [tile-result-state] ::tile-result-serialized #(some-> % ser/encode)))
 
-(rum/defcs content-tile <
+(rum/defcs ContentTile <
   rum/reactive
   []
   (let [[blueprint blueprint-error tile-x tile-y] (blueprint-state-cursors tile-settings-state ::tile-x ::tile-y)]
@@ -164,7 +165,7 @@
 (defonce mirror-result-serialized-state
   (rum/derived-atom [mirror-result-state] ::mirror-result-serialized #(some-> % ser/encode)))
 
-(rum/defcs content-mirror <
+(rum/defcs ContentMirror <
   rum/reactive
   []
   (let [[blueprint blueprint-error direction] (blueprint-state-cursors mirror-settings-state ::direction)]
@@ -207,7 +208,7 @@
 (defonce upgrade-result-serialized-state
   (rum/derived-atom [upgrade-result-state] ::upgrade-result-serialized #(some-> % ser/encode)))
 
-(rum/defcs content-upgrade <
+(rum/defcs ContentUpgrade <
   rum/reactive
   []
   (let [[blueprint blueprint-error upgrade-config] (blueprint-state-cursors upgrade-settings-state ::upgrade-config)]
@@ -236,58 +237,83 @@
 ;;; Main
 
 (def navigations
-  [{:key "about" :icon "info-circle-o" :title "About" :component content-about}
-   {:key "tile" :icon "appstore-o" :title "Tile" :component content-tile}
-   {:key "mirror" :icon "swap" :title "Mirror" :component content-mirror}
-   {:key "upgrade" :icon "tool" :title "Upgrade" :component content-upgrade}
-   {:key "settings " :icon "setting" :title "Settings" :component content-settings}])
+  [{:key "about" :icon "info-circle-o" :title "About" :component ContentAbout}
+   {:key "tile" :icon "appstore-o" :title "Tile" :component ContentTile}
+   {:key "mirror" :icon "swap" :title "Mirror" :component ContentMirror}
+   {:key "upgrade" :icon "tool" :title "Upgrade" :component ContentUpgrade}
+   {:key "settings " :icon "setting" :title "Settings" :component ContentSettings}])
 
 (def navigations-by-key
   (into {} (map (juxt :key identity)) navigations))
 
-(defonce navigation-state
-  (atom (-> navigations first :key)))
+;;; Controller (might end up in a differnt file
+
+; Navigation
+
+(defmulti navigation identity)
+
+(defmethod navigation :init []
+  {:state (-> navigations first :key)})
+
+(defmethod navigation :goto [_ [target] _]
+  {:state target})
+
+;
+
+(defonce reconciler
+  (citrus/reconciler
+   {:state (atom {})
+    :controllers {:navigation navigation}}))
+
+;;; Main content
 
 (defn- menu-item
   [{:keys [key icon title]}]
   (ant/menu-item {:key key} [:span (ant/icon {:type icon}) title]))
 
-(rum/defc render < rum/reactive
-  []
+(rum/defc AppHeader < rum/static []
+  (ant/layout-header
+   {:style {:padding-left "24px"}}
+   [:h1
+    {:style {:color "white"}}
+    (ant/icon {:type "setting"})
+    "Factorio Blueprint Tools"]))
+
+(rum/defc AppFooter < rum/static []
+  (ant/layout-footer
+   {:style {:text-align "center"}}
+   [:span
+    "Copyright © 2018 Christoph Frick"
+    " "
+    [:a {:href "https://github.com/christoph-frick/factorio-blueprint-tools"} "https://github.com/christoph-frick/factorio-blueprint-tools"]]))
+
+(rum/defc App < rum/reactive
+  [r]
   (ant/layout {:style {:min-height "100vh"}}
-
-              (ant/layout-header
-               {:style {:padding-left "24px"}}
-               [:h1
-                {:style {:color "white"}}
-                (ant/icon {:type "setting"})
-                "Factorio Blueprint Tools"])
-
+              (AppHeader)
               (ant/layout (ant/layout-sider
                            {:theme "light"}
                            (ant/menu {:theme "light"
                                       :mode "inline"
-                                      :selectedKeys [(rum/react navigation-state)]
-                                      :onSelect #(reset! navigation-state (.-key %))
+                                      :selectedKeys [(rum/react (citrus/subscription r [:navigation]))]
+                                      :onSelect #(citrus/dispatch! r :navigation :goto (.-key %))
                                       :style {:min-height "calc(100vh-64px)"}}
                                      (map menu-item navigations)))
                           (ant/layout
-                           (let [nav-key (rum/react navigation-state)]
+                           (let [nav-key (rum/react (citrus/subscription r [:navigation]))]
                              (if-let [nav-item (navigations-by-key nav-key)]
                                ((:component nav-item))
                                (do
-                                 (content-about)
+                                 (ContentAbout)
                                  (ant/message-error (str "Unknown navigation target: " nav-key)))))
-                           (ant/layout-footer
-                            {:style {:text-align "center"}}
-                            [:span
-                             "Copyright © 2018 Christoph Frick"
-                             " "
-                             [:a {:href "https://github.com/christoph-frick/factorio-blueprint-tools"} "https://github.com/christoph-frick/factorio-blueprint-tools"]])))))
+                           (AppFooter)))))
+
+(defonce init-ctrl
+  (citrus/broadcast-sync! reconciler :init))
 
 (defn init!
   []
-  (rum/mount (render) (js/document.getElementById "app")))
+  (rum/mount (App reconciler) (js/document.getElementById "app")))
 
 (init!)
 

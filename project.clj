@@ -8,7 +8,8 @@
                  ; [org.clojure/core.async  "0.3.443"]
                  [com.rpl/specter "1.1.1"]
                  [rum "0.11.2"]
-                 [antizer "0.3.1"]]
+                 [antizer "0.3.1"]
+                 [org.roman01la/citrus "3.2.0"]]
 
   :plugins [[lein-figwheel "0.5.13"]
             [lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]]
