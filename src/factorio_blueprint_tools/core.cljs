@@ -129,11 +129,11 @@
          (ant/form-item {:label "Tiles on X axis"}
                         (ant/input-number {:value (rum/react tile-x)
                                            :onChange #(reset! tile-x %)
-                                           :min 2}))
+                                           :min 1}))
          (ant/form-item {:label "Tiles on Y axis"}
                         (ant/input-number {:value (rum/react tile-y)
                                            :onChange #(reset! tile-y %)
-                                           :min 2}))
+                                           :min 1}))
          (form-item-output-blueprint tile-result-serialized-state))
         (preview/preview (rum/react tile-result-state))]))))
 
