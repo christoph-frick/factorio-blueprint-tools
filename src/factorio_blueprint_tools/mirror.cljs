@@ -19,6 +19,16 @@
   [mapping direction]
   (mapping (or direction 0)))
 
+(def priority-mapping
+  (add-inverse {"left" "right"}))
+
+(def priority-keys
+  #{:output_priority :input_priority})
+
+(defn mirror-priority
+  [e]
+  (s/transform [(s/submap priority-keys) s/MAP-VALS] priority-mapping e))
+
 (defn mirror
   [blueprint direction]
   (let [[axis dir-map dir-map-curved-rail] (get directions direction (:vertically directions))]
@@ -26,5 +36,6 @@
                  (fn [entity]
                    (-> entity
                        (update :direction (partial mirror-direction (if (= (:name entity) "curved-rail") dir-map-curved-rail dir-map)))
-                       (update-in [:position axis] -)))
+                       (update-in [:position axis] -)
+                       (mirror-priority)))
                  blueprint)))
