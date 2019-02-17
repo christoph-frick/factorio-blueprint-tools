@@ -34,6 +34,7 @@
                   :help "Copy a blueprint string from Factorio and paste it in this field"}
                  [:div
                   (ant/input-text-area (assoc ta-no-spellcheck
+                                              :class "input-blueprint"
                                               :style {:height "10em" :width "calc(100% - 10em - 24px)"}
                                               :value (rum/react (citrus/subscription r [controller :input :encoded]))
                                               :onChange #(citrus/dispatch! r controller :set-blueprint (-> % .-target .-value))
@@ -50,6 +51,7 @@
                   :help "Copy this blueprint string and import in from the blueprint library in Factorio"}
                  [:div
                   (ant/input-text-area (assoc ta-no-spellcheck
+                                              :class "input-result-blueprint"
                                               :style {:height "10em" :width "calc(100% - 10em - 24px)"}
                                               :value (rum/react (citrus/subscription r [controller :output :encoded]))
                                               :onFocus #(.select (-> % .-target))))
@@ -101,11 +103,13 @@
      [:div
       (ant/form
        (ant/form-item {:label "Tiles on X axis"}
-                      (ant/input-number {:value (rum/react (citrus/subscription r [:tile :config :tile-x]))
+                      (ant/input-number {:class "input-tile-x"
+                                         :value (rum/react (citrus/subscription r [:tile :config :tile-x]))
                                          :onChange #(citrus/dispatch! r :tile :set-config :tile-x %)
                                          :min 1}))
        (ant/form-item {:label "Tiles on Y axis"}
-                      (ant/input-number {:value (rum/react (citrus/subscription r [:tile :config :tile-y]))
+                      (ant/input-number {:class "input-tile-y"
+                                         :value (rum/react (citrus/subscription r [:tile :config :tile-y]))
                                          :onChange #(citrus/dispatch! r :tile :set-config :tile-y %)
                                          :min 1}))
        (BlueprintOutput r :tile))])))
@@ -124,7 +128,8 @@
      [:div
       (ant/form
        (ant/form-item {:label "Direction"}
-                      (ant/radio-group {:value (rum/react (citrus/subscription r [:mirror :config :direction]))
+                      (ant/radio-group {:class "input-mirror-direction"
+                                        :value (rum/react (citrus/subscription r [:mirror :config :direction]))
                                         :onChange #(citrus/dispatch! r :mirror :set-config :direction (-> % .-target .-value keyword))}
                                        (for [[option label] [[:vertically "Vertically"] [:horizontally "Horizontally"]]]
                                          (ant/radio {:key option :value option} label))))
@@ -312,7 +317,7 @@
 
 (defn- menu-item
   [{:keys [key icon title]}]
-  (ant/menu-item {:key key} [:span (ant/icon {:type icon}) title]))
+  (ant/menu-item {:key key :class (str "menu-" key)} [:span (ant/icon {:type icon}) title]))
 
 (rum/defc AppHeader < rum/static []
   (ant/layout-header
