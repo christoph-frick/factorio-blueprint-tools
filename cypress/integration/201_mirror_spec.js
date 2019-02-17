@@ -1,4 +1,4 @@
-describe('Tile', function() {
+describe('Mirror', function() {
 	before(function() {
 		cy.fixture("blueprints.json").as("blueprints")
 		cy.fixture("mirror_results.json").as("results")
