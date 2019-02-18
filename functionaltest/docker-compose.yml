@@ -1,0 +1,19 @@
+version: '3'
+services:
+        web:
+                image: nginx:latest
+                restart: always
+                ports:
+                        - "8080:80"
+                volumes:
+                        - "./public:/usr/share/nginx/html:ro"
+        test-runner:
+                build: docker
+                depends_on:
+                        - web
+                environment:
+                        - CYPRESS_baseUrl=http://web
+                volumes:
+                        - "./cypress.json:/app/cypress.json"
+                        - "./cypress/:/app/cypress/"
+                command: npx cypress run
