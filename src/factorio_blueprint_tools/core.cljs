@@ -86,8 +86,8 @@
                :type "warning"})
    (ant/form
     (ant/form-item {:label "Factorio entities"}
-                   (ant/select {:value "vanilla-0.16"}
-                               (ant/select-option {:key "vanilla-0.16"} "Vanilla 0.16"))))))
+                   (ant/select {:value "vanilla-0.17"}
+                               (ant/select-option {:key "vanilla-0.17"} "Vanilla 0.17"))))))
 
 ; Tile
 
