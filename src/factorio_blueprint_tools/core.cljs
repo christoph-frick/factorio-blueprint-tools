@@ -169,6 +169,9 @@
   (ant/layout-content
    {:style {:padding "1ex 1em"}}
    [:h2 "Add landfill as tiles under a blueprint"]
+   (ant/alert {:message "Please note, that the modified blueprint can not be placed in one go in Factorio right now.  If there are entities on water, they can not be placed.  Force-place (shift) the blueprint to build the landfill and all placeable entities first, and once the landfill is in, place the blueprint again."
+               :showIcon true
+               :type "warning"})
    (ant/form
     (BlueprintInput r :landfill))
    (when (rum/react (citrus/subscription r [:landfill :input :blueprint]))
