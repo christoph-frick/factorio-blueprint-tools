@@ -2,6 +2,7 @@
   (:require [factorio-blueprint-tools.tile :as tile]
             [factorio-blueprint-tools.mirror :as mirror]
             [factorio-blueprint-tools.upgrade :as upgrade]
+            [factorio-blueprint-tools.landfill :as landfill]
             [factorio-blueprint-tools.preview :as preview]
             [factorio-blueprint-tools.serialization :as ser]
             [clojure.string :as str]
@@ -71,7 +72,8 @@
    [:ul
     [:li [:em "Tile"] ": Arrange copies of the blueprint in a grid.  E.g. take a six electric miner blueprint and tile 15x15 to cover even the biggest resource fields"]
     [:li [:em "Mirror"] ": Mirror the blueprint either vertically or horizontally"]
-    [:li [:em "Upgrade"] ": Decide what common upgradeable entities (e.g. inserters) to upgrade.  Also supports downgrading (e.g. you have a great blueprint but not the tech yet)"]]
+    [:li [:em "Upgrade"] ": Decide what common upgradeable entities (e.g. inserters) to upgrade.  Also supports downgrading (e.g. you have a great blueprint but not the tech yet)"] 
+    [:li [:em "Landfill"] ": Put landfill under a blueprint"]]
    [:p "Then paste the blueprint string either from the game or from a different place into the input field, adjust the settings, and finally copy the final blueprint and import it into Factorio"]))
 
 ; Settings 
@@ -159,6 +161,21 @@
                                              (ant/radio {:key option :value option} (upgrade/upgrades-names option))))))
          (BlueprintOutput r :upgrade)))])))
 
+; Landfill
+
+(rum/defc ContentLandfill <
+  rum/reactive
+  [r]
+  (ant/layout-content
+   {:style {:padding "1ex 1em"}}
+   [:h2 "Add landfill as tiles under a blueprint"]
+   (ant/form
+    (BlueprintInput r :landfill))
+   (when (rum/react (citrus/subscription r [:landfill :input :blueprint]))
+     [:div
+      (ant/form
+       (BlueprintOutput r :landfill))])))
+
 ;;; Main
 
 (def navigations
@@ -166,6 +183,7 @@
    {:key "tile" :icon "appstore-o" :title "Tile" :component ContentTile}
    {:key "mirror" :icon "swap" :title "Mirror" :component ContentMirror}
    {:key "upgrade" :icon "tool" :title "Upgrade" :component ContentUpgrade}
+   {:key "landfill" :icon "table" :title "Landfill" :component ContentLandfill}
    {:key "settings " :icon "setting" :title "Settings" :component ContentSettings}])
 
 (def navigations-by-key
@@ -294,6 +312,30 @@
                          (fn upgrade [blueprint config]
                            (upgrade/upgrade-blueprint config blueprint)))})
 
+; Landfill
+
+(def default-landfill-config
+  {})
+
+(defmulti landfill identity)
+
+(defmethod landfill :init []
+  {:state (assoc default-tool-state
+                 :config default-landfill-config)})
+
+(defmethod landfill :set-blueprint [_ [encoded-blueprint] state]
+  {:state (set-blueprint state encoded-blueprint)
+   :dispatch [[:landfill :update]]})
+
+(defmethod landfill :set-config [_ [k v] state]
+  {:state (set-config state k v)
+   :dispatch [[:landfill :update]]})
+
+(defmethod landfill :update [_ _ state]
+  {:state (update-result state
+                         default-landfill-config
+                         (fn landfill [blueprint _]
+                           (landfill/landfill blueprint)))})
 
 ;; Effect Handlers
 
@@ -310,7 +352,8 @@
     :controllers {:navigation navigation
                   :tile tile
                   :mirror mirror
-                  :upgrade upgrade}
+                  :upgrade upgrade 
+                  :landfill landfill}
     :effect-handlers {:dispatch dispatch}}))
 
 ;;; Main content
