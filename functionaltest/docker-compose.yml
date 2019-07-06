@@ -8,12 +8,12 @@ services:
                 volumes:
                         - "./public:/usr/share/nginx/html:ro"
         test-runner:
-                build: docker
+                image: cypress/included:3.3.2
                 depends_on:
                         - web
                 environment:
                         - CYPRESS_baseUrl=http://web
+                working_dir: /app
                 volumes:
                         - "./cypress.json:/app/cypress.json"
                         - "./cypress/:/app/cypress/"
-                command: npx cypress run
