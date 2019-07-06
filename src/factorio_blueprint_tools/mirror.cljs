@@ -25,17 +25,33 @@
 (def priority-keys
   #{:output_priority :input_priority})
 
+(defn mirror-position
+  [p axis]
+  (update-in p [:position axis] -))
+
 (defn mirror-priority
   [e]
   (s/transform [(s/submap priority-keys) s/MAP-VALS] priority-mapping e))
 
+(defn mirror-entity
+  [axis dir-map dir-map-curved-rail entity]
+  (-> entity
+      (update :direction (partial mirror-direction (if (= (:name entity) "curved-rail") dir-map-curved-rail dir-map)))
+      (mirror-position axis)
+      (mirror-priority)))
+
+(defn mirror-tile
+  [axis tile]
+  (-> tile
+      (mirror-position axis)))
+
 (defn mirror
   [blueprint direction]
   (let [[axis dir-map dir-map-curved-rail] (get directions direction (:vertically directions))]
-    (s/transform [:blueprint :entities s/ALL]
-                 (fn [entity]
-                   (-> entity
-                       (update :direction (partial mirror-direction (if (= (:name entity) "curved-rail") dir-map-curved-rail dir-map)))
-                       (update-in [:position axis] -)
-                       (mirror-priority)))
-                 blueprint)))
+    (cond->> blueprint
+      ; entities
+      (get-in blueprint [:blueprint :entities])
+      (s/transform [:blueprint :entities s/ALL] (partial mirror-entity axis dir-map dir-map-curved-rail))
+      ; tiles
+      (get-in blueprint [:blueprint :tiles])
+      (s/transform [:blueprint :tiles s/ALL] (partial mirror-tile axis)))))
