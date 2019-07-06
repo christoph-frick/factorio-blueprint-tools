@@ -1,3 +1,5 @@
+all: release
+
 build-release: force
 	lein do clean, cljsbuild once min
 
