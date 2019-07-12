@@ -7,6 +7,7 @@
                  [org.clojure/clojurescript "1.10.520"]
                  ; [org.clojure/core.async  "0.3.443"]
                  [com.rpl/specter "1.1.2"]
+                 [markdown-clj "1.10.0"]
                  [rum "0.11.3"]
                  [antizer "0.3.1"]
                  [org.roman01la/citrus "3.2.1"]]

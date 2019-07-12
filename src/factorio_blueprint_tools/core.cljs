@@ -1,4 +1,5 @@
 (ns factorio-blueprint-tools.core
+  (:require-macros [factorio-blueprint-tools.macros :as m]) 
   (:require [factorio-blueprint-tools.tile :as tile]
             [factorio-blueprint-tools.mirror :as mirror]
             [factorio-blueprint-tools.upgrade :as upgrade]
@@ -65,16 +66,15 @@
   []
   (ant/layout-content
    {:style {:padding "1ex 1em"}}
-   [:h2 "Random tools to manipulate Factorio blueprint strings"]
-   [:p "While there are already some of those functions built as mods to the game, one can not use mods while playing for the achievements"]
-   [:h3 "Instructions"]
-   [:p "Pick a tool on the left hand side in the menu:"]
-   [:ul
-    [:li [:em "Tile"] ": Arrange copies of the blueprint in a grid.  E.g. take a six electric miner blueprint and tile 15x15 to cover even the biggest resource fields"]
-    [:li [:em "Mirror"] ": Mirror the blueprint either vertically or horizontally"]
-    [:li [:em "Upgrade"] ": Decide what common upgradeable entities (e.g. inserters) to upgrade.  Also supports downgrading (e.g. you have a great blueprint but not the tech yet)"] 
-    [:li [:em "Landfill"] ": Put landfill under a blueprint"]]
-   [:p "Then paste the blueprint string either from the game or from a different place into the input field, adjust the settings, and finally copy the final blueprint and import it into Factorio"]))
+   [:div {:dangerouslySetInnerHTML {:__html (m/load-markdown "docs.md")}}]))
+
+; Changelog
+
+(rum/defc ContentChangelog < rum/static
+  []
+  (ant/layout-content
+   {:style {:padding "1ex 1em"}}
+   [:div {:dangerouslySetInnerHTML {:__html (m/load-markdown "changelog.md")}}]))
 
 ; Settings 
 
@@ -187,6 +187,7 @@
    {:key "mirror" :icon "swap" :title "Mirror" :component ContentMirror}
    {:key "upgrade" :icon "tool" :title "Upgrade" :component ContentUpgrade}
    {:key "landfill" :icon "table" :title "Landfill" :component ContentLandfill}
+   {:key "changelog" :icon "check-square-o" :title "Changelog" :component ContentChangelog}
    {:key "settings " :icon "setting" :title "Settings" :component ContentSettings}])
 
 (def navigations-by-key
