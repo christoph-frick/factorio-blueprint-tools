@@ -203,19 +203,6 @@
 
 ;;; Main
 
-(def navigations
-  [{:key "about" :icon "info-circle-o" :title "About" :component ContentAbout}
-   {:key "tile" :icon "appstore-o" :title "Tile" :component ContentTile}
-   {:key "split" :icon "scissor" :title "Split" :component ContentSplit}
-   {:key "mirror" :icon "swap" :title "Mirror" :component ContentMirror}
-   {:key "upgrade" :icon "tool" :title "Upgrade" :component ContentUpgrade}
-   {:key "landfill" :icon "table" :title "Landfill" :component ContentLandfill}
-   {:key "changelog" :icon "check-square-o" :title "Changelog" :component ContentChangelog}
-   {:key "settings " :icon "setting" :title "Settings" :component ContentSettings}])
-
-(def navigations-by-key
-  (into {} (map (juxt :key identity)) navigations))
-
 ;; Controller (might end up in a differnt file
 
 ; Navigation
@@ -223,10 +210,21 @@
 (defmulti navigation identity)
 
 (defmethod navigation :init []
-  {:state (-> navigations first :key)})
+  (let [navigations [{:key "about" :icon "info-circle-o" :title "About" :component ContentAbout}
+                     {:key "tile" :icon "appstore-o" :title "Tile" :component ContentTile}
+                     {:key "split" :icon "scissor" :title "Split" :component ContentSplit}
+                     {:key "mirror" :icon "swap" :title "Mirror" :component ContentMirror}
+                     {:key "upgrade" :icon "tool" :title "Upgrade" :component ContentUpgrade}
+                     {:key "landfill" :icon "table" :title "Landfill" :component ContentLandfill}
+                     {:key "changelog" :icon "check-square-o" :title "Changelog" :component ContentChangelog}
+                     {:key "settings " :icon "setting" :title "Settings" :component ContentSettings}]
+        navigations-by-key (into {} (map (juxt :key identity)) navigations)]
+    {:state {:current (-> navigations first :key)
+             :navigations navigations
+             :navigations-by-key navigations-by-key}}))
 
-(defmethod navigation :goto [_ [target] _]
-  {:state target})
+(defmethod navigation :goto [_ [target] state]
+  {:state (assoc state :current target)})
 
 ; Helpers
 
@@ -435,22 +433,23 @@
   [r]
   (ant/layout {:style {:min-height "100vh"}}
               (AppHeader)
-              (ant/layout (ant/layout-sider
-                           {:theme "light"}
-                           (ant/menu {:theme "light"
-                                      :mode "inline"
-                                      :selectedKeys [(rum/react (citrus/subscription r [:navigation]))]
-                                      :onSelect #(citrus/dispatch! r :navigation :goto (.-key %))
-                                      :style {:min-height "calc(100vh-64px)"}}
-                                     (map menu-item navigations)))
-                          (ant/layout
-                           (let [nav-key (rum/react (citrus/subscription r [:navigation]))]
-                             (if-let [nav-item (navigations-by-key nav-key)]
-                               ((:component nav-item) r)
-                               (do
-                                 (ContentAbout r)
-                                 (ant/message-error (str "Unknown navigation target: " nav-key)))))
-                           (AppFooter)))))
+              (let [{:keys [current navigations navigations-by-key]} (rum/react (citrus/subscription r [:navigation]))]
+                (ant/layout
+                 (ant/layout-sider
+                  {:theme "light"}
+                  (ant/menu {:theme "light"
+                             :mode "inline"
+                             :selectedKeys [current]
+                             :onSelect #(citrus/dispatch! r :navigation :goto (.-key %))
+                             :style {:min-height "calc(100vh-64px)"}}
+                            (map menu-item navigations)))
+                 (ant/layout
+                  (if-let [navigation (navigations-by-key current)]
+                    ((:component navigation) r)
+                    (do
+                      (ContentAbout r)
+                      (ant/message-error (str "Unknown navigation target: " current))))
+                  (AppFooter))))))
 
 (defonce init-ctrl
   (citrus/broadcast-sync! reconciler :init))
