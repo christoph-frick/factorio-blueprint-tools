@@ -10,7 +10,7 @@
                  [markdown-clj "1.10.0"]
                  [rum "0.11.3"]
                  [antizer "3.19.8-0"]
-                 [org.roman01la/citrus "3.2.1"]]
+                 [clj-commons/citrus "3.2.3"]]
 
   :plugins [[lein-figwheel "0.5.19"]
             [lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]]
