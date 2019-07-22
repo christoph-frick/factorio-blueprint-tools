@@ -1,10 +1,11 @@
 (ns factorio-blueprint-tools.core
   (:require-macros [factorio-blueprint-tools.macros :as m]) 
-  (:require [factorio-blueprint-tools.tile :as tile]
-            [factorio-blueprint-tools.mirror :as mirror]
+  (:require [factorio-blueprint-tools.controller.tile :as tile-controller]
+            [factorio-blueprint-tools.controller.mirror :as mirror-controller]
             [factorio-blueprint-tools.upgrade :as upgrade]
-            [factorio-blueprint-tools.landfill :as landfill]
-            [factorio-blueprint-tools.split :as split]
+            [factorio-blueprint-tools.controller.upgrade :as upgrade-controller]
+            [factorio-blueprint-tools.controller.landfill :as landfill-controller]
+            [factorio-blueprint-tools.controller.split :as split-controller]
             [factorio-blueprint-tools.preview :as preview]
             [factorio-blueprint-tools.serialization :as ser]
             [clojure.string :as str]
@@ -203,8 +204,6 @@
 
 ;;; Main
 
-;; Controller (might end up in a differnt file
-
 ; Navigation
 
 (defmulti navigation identity)
@@ -226,166 +225,6 @@
 (defmethod navigation :goto [_ [target] state]
   {:state (assoc state :current target)})
 
-; Helpers
-
-(def default-tool-state
-  {:input {:encoded nil
-           :blueprint nil
-           :error nil}
-   :config {}
-   :output {:encoded nil
-            :blueprint nil}})
-
-(defn decode-blueprint
-  [encoded-blueprint]
-  (if (or (not encoded-blueprint) (str/blank? encoded-blueprint))
-    [nil nil]
-    (try
-      [(ser/decode encoded-blueprint) nil]
-      (catch :default e
-        [nil e]))))
-
-(defn- set-blueprint
-  [state encoded-blueprint]
-  (let [[blueprint error] (decode-blueprint encoded-blueprint)]
-    (update state :input assoc :encoded encoded-blueprint :blueprint blueprint :error error)))
-
-(defn- set-config
-  [state k v]
-  (update state :config assoc k v))
-
-(defn- update-result
-  [state default-config update-fn]
-  (let [blueprint (some-> state :input :blueprint)
-        config (or (some-> state :config) default-config)
-        result (some-> blueprint (update-fn config))
-        encoded-result (some-> result ser/encode)]
-    (update state :output assoc :blueprint result :encoded encoded-result)))
-
-
-; Tile
-
-(def default-tile-config
-  {:tile-x 2
-   :tile-y 2})
-
-(defmulti tile identity)
-
-(defmethod tile :init []
-  {:state (assoc default-tool-state
-                 :config default-tile-config)})
-
-(defmethod tile :set-blueprint [r [encoded-blueprint] state]
-  {:state (set-blueprint state encoded-blueprint)
-   :dispatch [[:tile :update]]})
-
-(defmethod tile :set-config [r [k v] state]
-  {:state (set-config state k v)
-   :dispatch [[:tile :update]]})
-
-(defmethod tile :update [_ _ state]
-  {:state (update-result state
-                         default-tile-config
-                         (fn tile [blueprint {:keys [tile-x tile-y] :as config}]
-                           (tile/tile blueprint tile-x tile-y)))})
-
-; Mirror
-
-(def default-mirror-config
-  {:direction :vertically})
-
-(defmulti mirror identity)
-
-(defmethod mirror :init []
-  {:state (assoc default-tool-state
-                 :config default-mirror-config)})
-
-(defmethod mirror :set-blueprint [_ [encoded-blueprint] state]
-  {:state (set-blueprint state encoded-blueprint)
-   :dispatch [[:mirror :update]]})
-
-(defmethod mirror :set-config [_ [k v] state]
-  {:state (set-config state k v)
-   :dispatch [[:mirror :update]]})
-
-(defmethod mirror :update [_ _ state]
-  {:state (update-result state
-                         default-mirror-config
-                         (fn mirror [blueprint {:keys [direction] :as config}]
-                           (mirror/mirror blueprint direction)))})
-
-
-; Upgrade
-
-(defmulti upgrade identity)
-
-(defmethod upgrade :init []
-  {:state (assoc default-tool-state
-                 :config upgrade/default-upgrade-config)})
-
-(defmethod upgrade :set-blueprint [_ [encoded-blueprint] state]
-  {:state (set-blueprint state encoded-blueprint)
-   :dispatch [[:upgrade :update]]})
-
-(defmethod upgrade :set-config [_ [k v] state]
-  {:state (set-config state k v)
-   :dispatch [[:upgrade :update]]})
-
-(defmethod upgrade :update [_ _ state]
-  {:state (update-result state
-                         upgrade/default-upgrade-config
-                         (fn upgrade [blueprint config]
-                           (upgrade/upgrade-blueprint config blueprint)))})
-
-; Landfill
-
-(def default-landfill-config
-  {})
-
-(defmulti landfill identity)
-
-(defmethod landfill :init []
-  {:state (assoc default-tool-state
-                 :config default-landfill-config)})
-
-(defmethod landfill :set-blueprint [_ [encoded-blueprint] state]
-  {:state (set-blueprint state encoded-blueprint)
-   :dispatch [[:landfill :update]]})
-
-(defmethod landfill :set-config [_ [k v] state]
-  {:state (set-config state k v)
-   :dispatch [[:landfill :update]]})
-
-(defmethod landfill :update [_ _ state]
-  {:state (update-result state
-                         default-landfill-config
-                         (fn landfill [blueprint _]
-                           (landfill/landfill blueprint)))})
-
-; Split
-
-(def default-split-config
-  {:tile-size 64})
-
-(defmulti split identity)
-
-(defmethod split :init []
-  {:state (assoc default-tool-state
-                 :config default-split-config)})
-
-(defmethod split :set-blueprint [_ [encoded-blueprint] state]
-  {:state (set-blueprint state encoded-blueprint)
-   :dispatch [[:split :update]]})
-
-(defmethod split :set-config [_ [k v] state]
-  {:state (set-config state k v)
-   :dispatch [[:split :update]]})
-
-(defmethod split :update [_ _ state]
-  {:state (update-result state
-                         default-split-config
-                         (fn split [blueprint {:keys [tile-size]}]
-                           (when tile-size (split/split blueprint tile-size))))})
 
 ;; Effect Handlers
 
@@ -400,11 +239,11 @@
   (citrus/reconciler
    {:state (atom {})
     :controllers {:navigation navigation
-                  :tile tile
-                  :mirror mirror
-                  :upgrade upgrade 
-                  :landfill landfill 
-                  :split split}
+                  :tile tile-controller/tile
+                  :mirror mirror-controller/mirror
+                  :upgrade upgrade-controller/upgrade
+                  :landfill landfill-controller/landfill
+                  :split split-controller/split}
     :effect-handlers {:dispatch dispatch}}))
 
 ;;; Main content
