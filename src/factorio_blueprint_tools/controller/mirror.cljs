@@ -8,19 +8,16 @@
 (defmulti mirror identity)
 
 (defmethod mirror :init []
-  {:state (assoc tools/default-state
-                 :config default-config)})
+  (tools/controller-init default-config))
 
 (defmethod mirror :set-blueprint [_ [encoded-blueprint] state]
-  {:state (tools/set-blueprint state encoded-blueprint)
-   :dispatch [[:mirror :update]]})
+  (tools/controller-set-blueprint :mirror state encoded-blueprint))
 
 (defmethod mirror :set-config [_ [k v] state]
-  {:state (tools/set-config state k v)
-   :dispatch [[:mirror :update]]})
+  (tools/controller-set-config :mirror state k v))
 
 (defmethod mirror :update [_ _ state]
-  {:state (tools/update-result state
-                               default-config
-                               (fn [blueprint {:keys [direction] :as config}]
-                                 (mirror/mirror blueprint direction)))})
+  (tools/controller-update-result state
+                                  default-config
+                                  (fn [blueprint {:keys [direction] :as config}]
+                                    (mirror/mirror blueprint direction))))

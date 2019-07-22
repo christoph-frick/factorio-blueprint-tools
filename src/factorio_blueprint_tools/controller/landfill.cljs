@@ -8,19 +8,16 @@
 (defmulti landfill identity)
 
 (defmethod landfill :init []
-  {:state (assoc tools/default-state
-                 :config default-config)})
+  (tools/controller-init default-config))
 
 (defmethod landfill :set-blueprint [_ [encoded-blueprint] state]
-  {:state (tools/set-blueprint state encoded-blueprint)
-   :dispatch [[:landfill :update]]})
+  (tools/controller-set-blueprint :landfill state encoded-blueprint))
 
 (defmethod landfill :set-config [_ [k v] state]
-  {:state (tools/set-config state k v)
-   :dispatch [[:landfill :update]]})
+  (tools/controller-set-config :landfill state k v))
 
 (defmethod landfill :update [_ _ state]
-  {:state (tools/update-result state
-                               default-config
-                               (fn [blueprint _]
-                                 (landfill/landfill blueprint)))})
+  (tools/controller-update-result state
+                                  default-config
+                                  (fn [blueprint _]
+                                    (landfill/landfill blueprint))))

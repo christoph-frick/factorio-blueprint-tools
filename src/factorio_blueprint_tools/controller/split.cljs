@@ -8,19 +8,16 @@
 (defmulti split identity)
 
 (defmethod split :init []
-  {:state (assoc tools/default-state
-                 :config default-config)})
+  (tools/controller-init default-config))
 
 (defmethod split :set-blueprint [_ [encoded-blueprint] state]
-  {:state (tools/set-blueprint state encoded-blueprint)
-   :dispatch [[:split :update]]})
+  (tools/controller-set-blueprint :split state encoded-blueprint))
 
 (defmethod split :set-config [_ [k v] state]
-  {:state (tools/set-config state k v)
-   :dispatch [[:split :update]]})
+  (tools/controller-set-config :split state k v))
 
 (defmethod split :update [_ _ state]
-  {:state (tools/update-result state
-                               default-config
-                               (fn [blueprint {:keys [tile-size]}]
-                                 (when tile-size (split/split blueprint tile-size))))})
+  (tools/controller-update-result state
+                                  default-config
+                                  (fn [blueprint {:keys [tile-size]}]
+                                    (when tile-size (split/split blueprint tile-size)))))
