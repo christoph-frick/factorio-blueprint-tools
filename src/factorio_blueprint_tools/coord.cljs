@@ -18,10 +18,16 @@
   [x y]
   [x y])
 
+(def ZERO (coord 0 0))
+
 (defn box
   [[ax ay] [bx by]]
   [(coord (min ax bx) (min ay by))
    (coord (max ax bx) (max ay by))])
+
+(defn box-from-size
+  [[x y] width height]
+  (box (coord x y) (coord (+ x width) (+ y height))))
 
 (defn rotate-coord 
   [[x y] dir]
@@ -57,3 +63,19 @@
    (coord
     (max ax1 ax2 bx1 bx2)
     (max ay1 ay2 by1 by2))))
+
+(defn area
+  [[[min-x min-y] [max-x max-y]]]
+  [(Math/ceil (- max-x min-x))
+   (Math/ceil (- max-y min-y))])
+
+(defn in-coord?
+  [[min max] i]
+  (and (<= min i)
+       (< i max)))
+
+(defn in-box?
+  [[[min-x min-y] [max-x max-y]] [x y]]
+  (and
+   (in-coord? (coord min-x max-x) x)
+   (in-coord? (coord min-y max-y) y)))

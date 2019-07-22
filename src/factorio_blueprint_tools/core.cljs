@@ -4,6 +4,7 @@
             [factorio-blueprint-tools.mirror :as mirror]
             [factorio-blueprint-tools.upgrade :as upgrade]
             [factorio-blueprint-tools.landfill :as landfill]
+            [factorio-blueprint-tools.split :as split]
             [factorio-blueprint-tools.preview :as preview]
             [factorio-blueprint-tools.serialization :as ser]
             [clojure.string :as str]
@@ -58,7 +59,8 @@
                                               :value (rum/react (citrus/subscription r [controller :output :encoded]))
                                               :onFocus #(.select (-> % .-target))))
                   (when-let [blueprint (rum/react (citrus/subscription r [controller :output :blueprint]))]
-                    (preview/preview blueprint))]))
+                    (when (:blueprint blueprint)
+                      (preview/preview blueprint)))]))
 
 ; About
 
@@ -179,11 +181,32 @@
       (ant/form
        (BlueprintOutput r :landfill))])))
 
+; Split
+
+(rum/defc ContentSplit <
+  rum/reactive
+  [r]
+  (ant/layout-content
+   {:style {:padding "1ex 1em"}}
+   [:h2 "Splits a blueprint into multiple tiles"]
+   (ant/form
+    (BlueprintInput r :split))
+   (when (rum/react (citrus/subscription r [:split :input :blueprint]))
+     [:div
+      (ant/form
+       (ant/form-item {:label "Size of one tile"}
+                      (ant/input-number {:class "input-split-tile-size"
+                                         :value (rum/react (citrus/subscription r [:split :config :tile-size]))
+                                         :onChange #(citrus/dispatch! r :split :set-config :tile-size %)
+                                         :min 32}))
+       (BlueprintOutput r :split))])))
+
 ;;; Main
 
 (def navigations
   [{:key "about" :icon "info-circle-o" :title "About" :component ContentAbout}
    {:key "tile" :icon "appstore-o" :title "Tile" :component ContentTile}
+   {:key "split" :icon "scissor" :title "Split" :component ContentSplit}
    {:key "mirror" :icon "swap" :title "Mirror" :component ContentMirror}
    {:key "upgrade" :icon "tool" :title "Upgrade" :component ContentUpgrade}
    {:key "landfill" :icon "table" :title "Landfill" :component ContentLandfill}
@@ -341,6 +364,31 @@
                          (fn landfill [blueprint _]
                            (landfill/landfill blueprint)))})
 
+; Split
+
+(def default-split-config
+  {:tile-size 64})
+
+(defmulti split identity)
+
+(defmethod split :init []
+  {:state (assoc default-tool-state
+                 :config default-split-config)})
+
+(defmethod split :set-blueprint [_ [encoded-blueprint] state]
+  {:state (set-blueprint state encoded-blueprint)
+   :dispatch [[:split :update]]})
+
+(defmethod split :set-config [_ [k v] state]
+  {:state (set-config state k v)
+   :dispatch [[:split :update]]})
+
+(defmethod split :update [_ _ state]
+  {:state (update-result state
+                         default-split-config
+                         (fn split [blueprint {:keys [tile-size]}]
+                           (when tile-size (split/split blueprint tile-size))))})
+
 ;; Effect Handlers
 
 (defn dispatch [r _ events]
@@ -357,7 +405,8 @@
                   :tile tile
                   :mirror mirror
                   :upgrade upgrade 
-                  :landfill landfill}
+                  :landfill landfill 
+                  :split split}
     :effect-handlers {:dispatch dispatch}}))
 
 ;;; Main content

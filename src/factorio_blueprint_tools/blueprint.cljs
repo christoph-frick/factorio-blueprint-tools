@@ -10,6 +10,10 @@
         entities
         (iterate inc 1)))
 
+(defn entity-coord
+  [{:keys [position] :as entity}]
+  (coord/coord (:x position) (:y position)))
+
 (defn entity-area
   [{:keys [name position direction] :as entity}]
   (-> (sizes/selection-box name)
@@ -28,3 +32,13 @@
   (s/multi-transform [:position (s/multi-path [:x (s/terminal #(+ % x-offset))]
                                               [:y (s/terminal #(+ % y-offset))])]
                      position))
+
+(defn book
+  [label blueprints]
+  {:blueprint_book
+   {:item "blueprint-book"
+    :label label
+    :blueprints (map-indexed
+                 (fn [idx blueprint]
+                   (assoc blueprint :index idx))
+                 blueprints)}})
