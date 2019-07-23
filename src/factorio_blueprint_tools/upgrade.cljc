@@ -1,7 +1,6 @@
 (ns factorio-blueprint-tools.upgrade
   (:require [com.rpl.specter :as s]
-            [clojure.string :as str]
-            [factorio-blueprint-tools.serialization :as ser]))
+            [clojure.string :as str]))
 
 (def upgrades [; higher tiers are more right
                ["transport-belt" "fast-transport-belt" "express-transport-belt"]

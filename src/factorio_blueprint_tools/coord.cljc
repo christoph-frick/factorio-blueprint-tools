@@ -27,9 +27,11 @@
 (def negate-coord 
   (partial transform-coord (partial * -1)))
 
-(def ZERO (coord 0 0))
+(def -ONE (coord -1))
 
-(def ONE (coord 1 1))
+(def ZERO (coord 0))
+
+(def ONE (coord 1))
 
 (def X (coord 1 0))
 
