@@ -14,11 +14,26 @@
                         (directions :south) [[-1 0] [0 -1]]
                         (directions :west) [[0 -1] [1 0]]})
 
-(defn coord 
-  [x y]
-  [x y])
+(defn coord
+  ([x y]
+   [x y])
+  ([s]
+   (coord s s)))
+
+(defn transform-coord
+  [f [x y]]
+  (coord (f x) (f y)))
+
+(def negate-coord 
+  (partial transform-coord (partial * -1)))
 
 (def ZERO (coord 0 0))
+
+(def ONE (coord 1 1))
+
+(def X (coord 1 0))
+
+(def Y (coord 0 1))
 
 (defn box
   [[ax ay] [bx by]]
@@ -54,6 +69,12 @@
    (translate-coord a offset)
    (translate-coord b offset)))
 
+(defn expand-box
+  [[a b] offset]
+  (box
+   a
+   (translate-coord b offset)))
+
 (defn union-box
   [[[ax1 ay1] [ax2 ay2]] [[bx1 by1] [bx2 by2]]]
   (box
@@ -66,8 +87,9 @@
 
 (defn area
   [[[min-x min-y] [max-x max-y]]]
-  [(Math/ceil (- max-x min-x))
-   (Math/ceil (- max-y min-y))])
+  (coord
+   (Math/ceil (- max-x min-x))
+   (Math/ceil (- max-y min-y))))
 
 (defn in-coord?
   [[min max] i]

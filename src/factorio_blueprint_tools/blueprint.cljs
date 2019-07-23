@@ -20,12 +20,28 @@
       (coord/rotate-box direction)
       (coord/translate-box (coord/coord (:x position) (:y position)))))
 
+(defn entities
+  [blueprint]
+  (s/select [:blueprint :entities s/ALL] blueprint))
+
+(defn area
+  [box-extractor-fn blueprint]
+  (transduce
+   (map box-extractor-fn)
+   (completing coord/union-box)
+   (entities blueprint)))
+
+(defn positions-area
+  [blueprint]
+  (area
+   #(let [pos (entity-coord %)] (coord/box pos pos))
+   blueprint))
+
 (defn entities-area
   [blueprint]
-  (transduce
-   (map entity-area)
-   (completing coord/union-box)
-   (s/select [:blueprint :entities s/ALL (s/submap [:name :position :direction])] blueprint)))
+  (area
+   entity-area
+   blueprint))
 
 (defn move-position
   [position x-offset y-offset]
