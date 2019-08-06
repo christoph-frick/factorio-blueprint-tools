@@ -9,7 +9,7 @@
                  [com.rpl/specter "1.1.2"]
                  [markdown-clj "1.10.0"]
                  [rum "0.11.3"]
-                 [net.ofnir/antizer "3.20.6-0"]
+                 [net.ofnir/antizer "3.21.1-0"]
                  [clj-commons/citrus "3.2.3"]]
 
   :plugins [[lein-figwheel "0.5.19"]
