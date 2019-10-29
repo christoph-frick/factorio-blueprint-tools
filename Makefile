@@ -7,7 +7,7 @@ build-functionaltest:build-release
 	rsync -av --delete resources/public/ functionaltest/public/
 
 quick-run-functionaltest: force
-	cd functionaltest && docker-compose run --rm test-runner && docker-compose down
+	cd functionaltest && docker-compose pull && docker-compose run --rm test-runner && docker-compose down
 
 run-functionaltest:build-functionaltest quick-run-functionaltest
 
