@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/clojurescript "1.10.520"]
                  ; [org.clojure/core.async  "0.3.443"]
-                 [com.rpl/specter "1.1.2"]
+                 [com.rpl/specter "1.1.3"]
                  [markdown-clj "1.10.0"]
                  [rum "0.11.3"]
                  [net.ofnir/antizer "3.23.4-0"]
@@ -96,7 +96,7 @@
   ;; https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl
   :profiles {:dev {:dependencies [[binaryage/devtools "0.9.10"]
                                   [figwheel-sidecar "0.5.19"]
-                                  [cider/piggieback "0.4.1"]]
+                                  [cider/piggieback "0.4.2"]]
                    ;; need to add dev source path here to get user.clj loaded
                    :source-paths ["src" "dev"]
                    ;; for CIDER
