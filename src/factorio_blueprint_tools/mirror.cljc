@@ -6,14 +6,28 @@
   [m]
   (into m (for [[k v] m] [v k])))
 
+(defn get-or-default
+  "Similar to get, but get the default-key from the map as default"
+  [map key default-key]
+  (get map key (get map default-key)))
+
+(def direction-to-axis
+  {:vertically :x
+   :horizontally :y})
+
 ; curved rails are tricky with their direction:
 ; a full circle looks like this (starting with at 01:30 o'clock):
 ; 3 0 5 2 7 4 1 6 
 
-(def directions
-  ; direction, axis to negate, direction to change; direction to change for curved rails
-  {:vertically [:x {0 0, 1 7, 2 6, 3 5, 4 4, 5 3, 6 2, 7 1} (add-inverse {0 1, 2 7, 3 6, 4 5})]
-   :horizontally [:y {0 4, 1 3, 2 2, 3 1, 4 0, 5 7, 6 6, 7 5} (add-inverse {0 5, 1 4, 2 3, 6 7})]})
+; tanks need to rotate for 90° instead (the 180° just looks the same)
+
+(def direction-to-mirror-config
+  {:vertically {"curved-rail" (add-inverse {0 1, 2 7, 3 6, 4 5})
+                "storage-tank" {0 2, 2 4, 4 6, 6 0}
+                :default {0 0, 1 7, 2 6, 3 5, 4 4, 5 3, 6 2, 7 1}}
+   :horizontally {"curved-rail" (add-inverse {0 5, 1 4, 2 3, 6 7})
+                  "storage-tank" {0 2, 2 4, 4 6, 6 0}
+                  :default {0 4, 1 3, 2 2, 3 1, 4 0, 5 7, 6 6, 7 5}}})
 
 (defn- mirror-direction
   [mapping direction]
@@ -34,9 +48,9 @@
   (s/transform [(s/submap priority-keys) s/MAP-VALS] priority-mapping e))
 
 (defn mirror-entity
-  [axis dir-map dir-map-curved-rail entity]
+  [axis mirror-config entity]
   (-> entity
-      (update :direction (partial mirror-direction (if (= (:name entity) "curved-rail") dir-map-curved-rail dir-map)))
+      (update :direction (partial mirror-direction (get-or-default mirror-config (:name entity) :default)))
       (mirror-position axis)
       (mirror-priority)))
 
@@ -47,11 +61,12 @@
 
 (defn mirror
   [blueprint direction]
-  (let [[axis dir-map dir-map-curved-rail] (get directions direction (:vertically directions))]
+  (let [axis (get-or-default direction-to-axis direction :vertically)
+        mirror-config (get-or-default direction-to-mirror-config direction :vertically)]
     (cond->> blueprint
       ; entities
       (get-in blueprint [:blueprint :entities])
-      (s/transform [:blueprint :entities s/ALL] (partial mirror-entity axis dir-map dir-map-curved-rail))
+      (s/transform [:blueprint :entities s/ALL] (partial mirror-entity axis mirror-config))
       ; tiles
       (get-in blueprint [:blueprint :tiles])
       (s/transform [:blueprint :tiles s/ALL] (partial mirror-tile axis)))))

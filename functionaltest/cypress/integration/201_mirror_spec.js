@@ -21,4 +21,8 @@ describe('Mirror', function() {
 	it('Mirror with tiles', function() {
 		simpleTest(this.blueprints.with_tiles, this.results.with_tiles_vertically, this.results.with_tiles_horizontally)
 	})
+
+	it('Mirror tank only rotates it', function() {
+		simpleTest(this.blueprints.tank, this.results.tank_vertically, this.results.tank_horizontally)
+	})
 })
