@@ -8,6 +8,7 @@
   (as-> entity-name x
     (.hashCode goog.string x)
     (.toString x 16)
+    (str "000000" x) ; prefix with enough zeros to work for sure; see #9
     (.substring x 0 6)
     (.concat "#" x)
     (.hexToRgb goog.color x)

@@ -8,4 +8,8 @@ describe('Landfill', function() {
 		cy.pasteBlueprint(this.blueprints.belts)
 		cy.assertResultBlueprint(this.results.landfilledbelts)
 	})
+	it('Can load blueprint, where preview failed for a "to short color" #9', function() {
+		cy.pasteBlueprint(this.blueprints.oddcolor)
+		cy.assertResultBlueprint(this.results.oddcolor)
+	})
 })
