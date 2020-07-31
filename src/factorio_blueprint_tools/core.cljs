@@ -75,15 +75,9 @@
                 :description "This is bascially the behaviour of previous versions. Otherwise the blueprints are way off the center.  The problem is under investigation."
                 :showIcon true
                 :type "warning"})]
-   [:div {:dangerouslySetInnerHTML {:__html (m/load-markdown "docs.md")}}]))
-
-; Changelog
-
-(rum/defc ContentChangelog < rum/static
-  []
-  (ant/layout-content
-   {:style {:padding "1ex 1em"}}
+   [:div {:dangerouslySetInnerHTML {:__html (m/load-markdown "docs.md")}}]
    [:div {:dangerouslySetInnerHTML {:__html (m/load-markdown "changelog.md")}}]))
+
 
 ; Settings 
 
@@ -241,7 +235,6 @@
                      {:key "upgrade" :icon "tool" :title "Upgrade" :component ContentUpgrade}
                      {:key "landfill" :icon "table" :title "Landfill" :component ContentLandfill}
                      {:key "debug" :icon "bug" :title "Debug" :component ContentDebug}
-                     {:key "changelog" :icon "check-square-o" :title "Changelog" :component ContentChangelog}
                      {:key "settings " :icon "setting" :title "Settings" :component ContentSettings}]
         navigations-by-key (into {} (map (juxt :key identity)) navigations)]
     {:state {:current (-> navigations first :key)
