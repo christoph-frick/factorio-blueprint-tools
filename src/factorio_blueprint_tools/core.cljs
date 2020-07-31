@@ -70,6 +70,11 @@
   []
   (ant/layout-content
    {:style {:padding "1ex 1em"}}
+   [:div
+    (ant/alert {:message "For blueprints from Factorio >= 0.18.37, tick 'Grid size' and 'Absolute reference point'"
+                :description "This is bascially the behaviour of previous versions. Otherwise the blueprints are way off the center.  The problem is under investigation."
+                :showIcon true
+                :type "warning"})]
    [:div {:dangerouslySetInnerHTML {:__html (m/load-markdown "docs.md")}}]))
 
 ; Changelog
