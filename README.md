@@ -7,4 +7,4 @@ Online version: https://christoph-frick.github.io/factorio-blueprint-tools/
 
 [Documentation and Features](resources/docs.md) and [Changelog](resources/changelog.md)
 
-Copyright © 2019 Christoph Frick <https://github.com/christoph-frick/factorio-blueprint-tools>
+Copyright © 2020 Christoph Frick <https://github.com/christoph-frick/factorio-blueprint-tools>

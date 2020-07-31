@@ -286,7 +286,7 @@
   (ant/layout-footer
    {:style {:text-align "center"}}
    [:span
-    "Copyright © 2019 Christoph Frick"
+    "Copyright © 2020 Christoph Frick"
     " "
     [:a {:href "https://github.com/christoph-frick/factorio-blueprint-tools"} "https://github.com/christoph-frick/factorio-blueprint-tools"]]))
 
