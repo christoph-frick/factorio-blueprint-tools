@@ -1,7 +1,10 @@
 ## Changelog
 
+- 2020-07-31 | Update      : Switch to 0.18.38
+- 2019-08-06 | Update      : Switch to 0.17.63
 - 2019-07-22 | New feature : Add splitting of blueprints
 - 2019-07-06 | New feature : Support mirroring of underlying tiles
+- 2019-06-17 | Update      : Switch to 0.17.49
 - 2019-06-17 | New feature : Put landfill under a blueprint
 - 2018-09-10 | Bugfix      : Switch input/output prios on splitters when mirroring
 - 2018-09-04 | New feature : Minimum for tiling now is one (e.g. for defense lines)
