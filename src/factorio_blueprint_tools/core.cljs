@@ -6,6 +6,7 @@
             [factorio-blueprint-tools.controller.upgrade :as upgrade-controller]
             [factorio-blueprint-tools.controller.landfill :as landfill-controller]
             [factorio-blueprint-tools.controller.split :as split-controller]
+            [factorio-blueprint-tools.controller.debug :as debug-controller]
             [factorio-blueprint-tools.preview :as preview]
             [factorio-blueprint-tools.serialization :as ser]
             [clojure.string :as str]
@@ -202,6 +203,25 @@
                                          :min 32}))
        (BlueprintOutput r :split))])))
 
+; Debug
+
+(rum/defc ContentDebug <
+  rum/reactive
+  [r]
+  (ant/layout-content
+    {:style {:padding "1ex 1em"}}
+    [:h2 "Show the content of a blueprint"]
+    (ant/form
+      (BlueprintInput r :debug))
+    (when (rum/react (citrus/subscription r [:debug :input :blueprint]))
+      (ant/form-item {:label "EDN"}
+                     [:div
+                      (ant/input-text-area (assoc ta-no-spellcheck
+                                                  :class "input-result-blueprint"
+                                                  :style {:height "10em" :width "100%"}
+                                                  :value (rum/react (citrus/subscription r [:debug :output]))
+                                                  :onFocus #(.select (-> % .-target))))]))))
+
 ;;; Main
 
 ; Navigation
@@ -215,6 +235,7 @@
                      {:key "mirror" :icon "swap" :title "Mirror" :component ContentMirror}
                      {:key "upgrade" :icon "tool" :title "Upgrade" :component ContentUpgrade}
                      {:key "landfill" :icon "table" :title "Landfill" :component ContentLandfill}
+                     {:key "debug" :icon "bug" :title "Debug" :component ContentDebug}
                      {:key "changelog" :icon "check-square-o" :title "Changelog" :component ContentChangelog}
                      {:key "settings " :icon "setting" :title "Settings" :component ContentSettings}]
         navigations-by-key (into {} (map (juxt :key identity)) navigations)]
@@ -243,7 +264,8 @@
                   :mirror mirror-controller/mirror
                   :upgrade upgrade-controller/upgrade
                   :landfill landfill-controller/landfill
-                  :split split-controller/split}
+                  :split split-controller/split 
+                  :debug debug-controller/debug}
     :effect-handlers {:dispatch dispatch}}))
 
 ;;; Main content

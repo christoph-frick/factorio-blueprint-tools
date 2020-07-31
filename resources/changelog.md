@@ -1,5 +1,6 @@
 ## Changelog
 
+- 2020-07-31 | New feature : Show the EDN of the blueprint for easier debugging
 - 2020-07-31 | Update      : Switch to 0.18.38
 - 2019-08-06 | Update      : Switch to 0.17.63
 - 2019-07-22 | New feature : Add splitting of blueprints
