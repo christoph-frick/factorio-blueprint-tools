@@ -12,4 +12,8 @@ describe('Landfill', function() {
 		cy.pasteBlueprint(this.blueprints.oddcolor)
 		cy.assertResultBlueprint(this.results.oddcolor)
 	})
+	it('Also work on blueprint books', function() {
+		cy.pasteBlueprint(this.blueprints.landfillbook)
+		cy.assertResultBlueprint(this.results.landfillbook)
+	})
 })
