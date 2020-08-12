@@ -65,7 +65,6 @@
 
 (defn map-blueprint-or-book
   [f blueprint-or-book]
-  (println  (is-book? blueprint-or-book))
   (if (is-book? blueprint-or-book)
     (s/transform [:blueprint_book :blueprints s/ALL] f blueprint-or-book)
     (f blueprint-or-book)))
