@@ -1,7 +1,7 @@
 ## Changelog
 
-- 2020-08-12 | New feature : Allow `landfill` to also take a blueprint
-  book
+- 2020-08-25 | New feature : Landfill also works for recursive blueprints
+- 2020-08-12 | New feature : Allow landfill to also take a blueprint book
 - 2020-07-31 | New feature : Show the EDN of the blueprint for easier debugging
 - 2020-07-31 | Update      : Switch to 0.18.38
 - 2019-08-06 | Update      : Switch to 0.17.63

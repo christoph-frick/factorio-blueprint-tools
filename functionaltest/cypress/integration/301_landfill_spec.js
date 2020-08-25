@@ -16,4 +16,8 @@ describe('Landfill', function() {
 		cy.pasteBlueprint(this.blueprints.landfillbook)
 		cy.assertResultBlueprint(this.results.landfillbook)
 	})
+	it('Also works on recursive blueprint books', function() {
+		cy.pasteBlueprint(this.blueprints.landfillbookinbook)
+		cy.assertResultBlueprint(this.results.landfillbookinbook)
+	})
 })
