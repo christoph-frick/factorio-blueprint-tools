@@ -59,6 +59,10 @@
                    (assoc blueprint :index idx))
                  blueprints)}})
 
+(defn blueprint?
+  [maybe-blueprint]
+  (contains? maybe-blueprint :blueprint))
+
 (defn blueprint-book?
   [blueprint-or-book]
   (contains? blueprint-or-book :blueprint_book))
