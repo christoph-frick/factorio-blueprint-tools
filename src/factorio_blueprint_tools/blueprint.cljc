@@ -92,3 +92,7 @@
 (defn snap-grid
   [blueprint]
   (s/select [:blueprint :snap-to-grid (s/multi-path :x :y)] blueprint))
+
+(defn set-snap-grid
+  [blueprint x y]
+  (update-in blueprint [:blueprint :snap-to-grid] assoc :x x :y y))

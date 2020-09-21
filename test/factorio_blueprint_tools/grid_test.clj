@@ -30,3 +30,8 @@
 
 (deftest test-snap-grid
   (is (= [1 1] (t/snap-grid (:snap fixtures)))))
+
+(def test-set-snap-grid
+  (is (= [2 3] 
+         (t/snap-grid 
+           (t/set-snap-grid (:snap fixtures) 2 3)))))
