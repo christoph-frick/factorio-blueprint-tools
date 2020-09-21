@@ -274,10 +274,10 @@
 
 (rum/defc AppHeader < rum/static []
   (ant/layout-header
-   {:style {:padding-left "24px"}}
+   {:style {:padding-left "16px"}}
    [:h1
     {:style {:color "white"}}
-    (ant/icon {:type "setting"})
+    (ant/icon {:type "setting" :style {:padding-right "12px"}})
     "Factorio Blueprint Tools"]))
 
 (rum/defc AppFooter < rum/static []
