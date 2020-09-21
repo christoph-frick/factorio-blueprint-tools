@@ -1,5 +1,6 @@
 ## Changelog
 
+- 2020-09-21 | Bugfix      : Initial support for "snap to grid"
 - 2020-08-25 | Update      : Switch to 1.0.0
 - 2020-08-25 | New feature : Landfill also works for recursive blueprints
 - 2020-08-12 | New feature : Allow landfill to also take a blueprint book

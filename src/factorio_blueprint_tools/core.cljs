@@ -70,12 +70,12 @@
   []
   (ant/layout-content
    {:style {:padding "1ex 1em"}}
-   [:div
-    (ant/alert {:message "For blueprints from Factorio >= 0.18.37, tick 'Grid size' and 'Absolute reference point'"
-                :description "This is bascially the behaviour of previous versions. Otherwise the blueprints are way off the center.  The problem is under investigation."
-                :showIcon true
-                :type "warning"})]
    [:div {:dangerouslySetInnerHTML {:__html (m/load-markdown "docs.md")}}]
+   [:div
+    [:h2 "Reporting Bugs"]
+    "In case you find a bug or wish for a feature, feel free to " [:a {:href "https://github.com/christoph-frick/factorio-blueprint-tools/issues"} "create an issue"] "."
+    " "
+    "It is super helpful to include how to reproduce the bug e.g. by providing a blueprint string."]
    [:div {:dangerouslySetInnerHTML {:__html (m/load-markdown "changelog.md")}}]))
 
 
@@ -285,8 +285,10 @@
    {:style {:text-align "center"}}
    [:span
     "Copyright © 2020 Christoph Frick"
-    " "
-    [:a {:href "https://github.com/christoph-frick/factorio-blueprint-tools"} "https://github.com/christoph-frick/factorio-blueprint-tools"]]))
+    " — "
+    [:a {:href "https://github.com/christoph-frick/factorio-blueprint-tools"} "Source code"]
+    " — "
+    [:a {:href "https://github.com/christoph-frick/factorio-blueprint-tools/issues"} "Found an issue?"]]))
 
 (rum/defc App < rum/reactive
   [r]
