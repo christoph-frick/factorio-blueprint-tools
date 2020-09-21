@@ -42,6 +42,8 @@
   [(coord (min ax bx) (min ay by))
    (coord (max ax bx) (max ay by))])
 
+(def NIL-BOX [[nil nil] [nil nil]])
+
 (defn box-from-size
   [[x y] width height]
   (box (coord x y) (coord (+ x width) (+ y height))))
@@ -78,14 +80,18 @@
    (translate-coord b offset)))
 
 (defn union-box
-  [[[ax1 ay1] [ax2 ay2]] [[bx1 by1] [bx2 by2]]]
-  (box
-   (coord
-    (min ax1 ax2 bx1 bx2)
-    (min ay1 ay2 by1 by2))
-   (coord
-    (max ax1 ax2 bx1 bx2)
-    (max ay1 ay2 by1 by2))))
+  [b1 b2]
+  (if (= NIL-BOX b1)
+    b2
+    (let [[[ax1 ay1] [ax2 ay2]] b1
+          [[bx1 by1] [bx2 by2]] b2]
+      (box
+       (coord
+        (min ax1 ax2 bx1 bx2)
+        (min ay1 ay2 by1 by2))
+       (coord
+        (max ax1 ax2 bx1 bx2)
+        (max ay1 ay2 by1 by2))))))
 
 (defn area
   [[[min-x min-y] [max-x max-y]]]
