@@ -20,3 +20,13 @@
                 :entities [{:entity_number 1 :name "transport-belt" :position {:x 0.5 :y 0.5}}] 
                 :item "blueprint" 
                 :version 281474976710656}}})
+
+(deftest test-snap
+  (are [expected]
+       (= expected (t/snap (expected fixtures)))
+       :default
+       :snap
+       :absolute))
+
+(deftest test-snap-grid
+  (is (= [1 1] (t/snap-grid (:snap fixtures)))))

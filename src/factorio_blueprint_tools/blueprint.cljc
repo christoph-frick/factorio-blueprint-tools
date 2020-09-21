@@ -68,3 +68,23 @@
   (if (blueprint-book? blueprint-or-book)
     (s/transform [:blueprint_book :blueprints s/ALL] (partial map-blueprint-or-book f) blueprint-or-book)
     (f blueprint-or-book)))
+
+(defn snap-to-grid?
+  [blueprint]
+  (map? (some-> blueprint :blueprint :snap-to-grid)))
+
+(defn absolute-snapping?
+  [blueprint]
+  (= true (some-> blueprint :blueprint :absolute-snapping)))
+
+(defn snap
+  "Configured snapping of a blueprint: :absolute, :snap, :default"
+  [blueprint]
+  (case ((juxt snap-to-grid? absolute-snapping?) blueprint)
+    [true true] :absolute
+    [true false] :snap
+    :default))
+
+(defn snap-grid
+  [blueprint]
+  (s/select [:blueprint :snap-to-grid (s/multi-path :x :y)] blueprint))
