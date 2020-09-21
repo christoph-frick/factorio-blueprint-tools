@@ -59,12 +59,12 @@
                    (assoc blueprint :index idx))
                  blueprints)}})
 
-(defn is-book?
+(defn blueprint-book?
   [blueprint-or-book]
   (contains? blueprint-or-book :blueprint_book))
 
 (defn map-blueprint-or-book
   [f blueprint-or-book]
-  (if (is-book? blueprint-or-book)
+  (if (blueprint-book? blueprint-or-book)
     (s/transform [:blueprint_book :blueprints s/ALL] (partial map-blueprint-or-book f) blueprint-or-book)
     (f blueprint-or-book)))
