@@ -17,7 +17,6 @@
    :absolute 
    {:blueprint {:snap-to-grid {:x 1 :y 1} 
                 :absolute-snapping true 
-                :icons [{:signal {:type "item" :name "transport-belt"} :index 1}]
                 :entities [{:entity_number 1 :name "transport-belt" :position {:x 0.5 :y 0.5}}] 
                 :item "blueprint" 
                 :version 281474976710656}}})
