@@ -14,8 +14,8 @@ describe('Mirror', function() {
 		cy.goto(".menu-mirror", "Mirror")
 	})
 
-	it('Mirror miners', function() {
-		simpleTest(this.blueprints.miners, this.results.miners_vertically, this.results.miners_horizontally)
+	it('Mirror belts', function() {
+		simpleTest(this.blueprints.belts, this.results.belts_vertically, this.results.belts_horizontally)
 	})
 
 	it('Mirror with tiles', function() {

@@ -40,33 +40,39 @@
   #{:output_priority :input_priority})
 
 (defn mirror-position
-  [p axis]
-  (update-in p [:position axis] -))
+  [p axis correction]
+  (update-in p [:position axis] #(+ correction (- %))))
 
 (defn mirror-priority
   [e]
   (s/transform [(s/submap priority-keys) s/MAP-VALS] priority-mapping e))
 
 (defn mirror-entity
-  [axis mirror-config entity]
+  [axis mirror-config correction entity]
   (-> entity
       (update :direction (partial mirror-direction (get-or-default mirror-config (:name entity) :default)))
-      (mirror-position axis)
+      (mirror-position axis correction)
       (mirror-priority)))
 
 (defn mirror-tile
-  [axis tile]
-  (-> tile
-      (mirror-position axis)))
+  [axis correction tile]
+  (mirror-position tile axis correction))
 
 (defn mirror
   [blueprint direction]
   (let [axis (get-or-default direction-to-axis direction :vertically)
-        mirror-config (get-or-default direction-to-mirror-config direction :vertically)]
+        mirror-config (get-or-default direction-to-mirror-config direction :vertically)
+        [min' max'] (reduce (fn [[a b] x]
+                              [(min a x) (max b x)])
+                            [0xffff -0xffff]
+                            (concat
+                             (s/select [:blueprint :entities s/ALL :position axis] blueprint)
+                             (s/select [:blueprint :tiles s/ALL :position axis] blueprint)))
+        correction (+ min' max')]
     (cond->> blueprint
       ; entities
       (get-in blueprint [:blueprint :entities])
-      (s/transform [:blueprint :entities s/ALL] (partial mirror-entity axis mirror-config))
+      (s/transform [:blueprint :entities s/ALL] (partial mirror-entity axis mirror-config correction))
       ; tiles
       (get-in blueprint [:blueprint :tiles])
-      (s/transform [:blueprint :tiles s/ALL] (partial mirror-tile axis)))))
+      (s/transform [:blueprint :tiles s/ALL] (partial mirror-tile axis correction)))))
