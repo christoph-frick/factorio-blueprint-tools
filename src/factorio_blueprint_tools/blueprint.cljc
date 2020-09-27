@@ -94,7 +94,9 @@
     [true true]
     (coord/union-box
      (entities-area blueprint)
-     (tiles-area blueprint))))
+     (tiles-area blueprint))
+
+    coord/NIL-BOX))
 
 (defn move-position
   [position x-offset y-offset]
