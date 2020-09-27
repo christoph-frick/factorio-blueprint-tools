@@ -20,28 +20,81 @@
       (coord/rotate-box direction)
       (coord/translate-box (coord/coord (:x position) (:y position)))))
 
+(defn has-items?
+  [path blueprint]
+  (-> (get-in blueprint path) (seq) (boolean)))
+
+(def entities-get-in
+  [:blueprint :entities])
+
+(def entities-path
+  (conj entities-get-in s/ALL))
+
+(defn has-entities?
+  [blueprint]
+  (has-items? entities-get-in blueprint))
+
 (defn entities
   [blueprint]
-  (s/select [:blueprint :entities s/ALL] blueprint))
+  (s/select entities-path blueprint))
+
+(def tiles-get-in
+  [:blueprint :tiles])
+
+(def tiles-path
+  (conj tiles-get-in s/ALL))
+
+(defn has-tiles?
+  [blueprint]
+  (has-items? tiles-get-in blueprint))
+
+(defn tiles
+  [blueprint]
+  (s/select tiles-path blueprint))
 
 (defn area
-  [box-extractor-fn blueprint]
+  [box-extractor-fn items]
   (transduce
    (map box-extractor-fn)
    (completing coord/union-box)
-   (entities blueprint)))
+   coord/NIL-BOX
+   items))
 
 (defn positions-area
   [blueprint]
   (area
    #(let [pos (entity-coord %)] (coord/box pos pos))
-   blueprint))
+   (entities blueprint)))
 
 (defn entities-area
   [blueprint]
   (area
    entity-area
-   blueprint))
+   (entities blueprint)))
+
+(defn tiles-area
+  [blueprint]
+  (area
+   #(let [pos (entity-coord %)]
+      (coord/box
+        pos
+        (coord/translate-coord pos coord/ONE)))
+   (tiles blueprint)))
+
+(defn blueprint-area
+  "Area of entities and tiles"
+  [blueprint]
+  (case ((juxt has-entities? has-tiles?) blueprint)
+    [true false]
+    (entities-area blueprint)
+
+    [false true]
+    (tiles-area blueprint)
+
+    [true true]
+    (coord/union-box
+     (entities-area blueprint)
+     (tiles-area blueprint))))
 
 (defn move-position
   [position x-offset y-offset]
