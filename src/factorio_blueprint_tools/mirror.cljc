@@ -15,6 +15,10 @@
   {:vertically :x
    :horizontally :y})
 
+(def axis-to-coord
+  {:x 0
+   :y 1})
+
 ; curved rails are tricky with their direction:
 ; a full circle looks like this (starting with at 01:30 o'clock):
 ; 3 0 5 2 7 4 1 6 
@@ -62,17 +66,13 @@
   [blueprint direction]
   (let [axis (get-or-default direction-to-axis direction :vertically)
         mirror-config (get-or-default direction-to-mirror-config direction :vertically)
-        [min' max'] (reduce (fn [[a b] x]
-                              [(min a x) (max b x)])
-                            [0xffff -0xffff]
-                            (concat
-                             (s/select [:blueprint :entities s/ALL :position axis] blueprint)
-                             (s/select [:blueprint :tiles s/ALL :position axis] blueprint)))
-        correction (+ min' max')]
+        correction (if (blueprint/absolute-snapping? blueprint)
+                     (get (blueprint/snap-grid blueprint) (axis-to-coord axis))
+                     0)]
     (cond->> blueprint
       ; entities
-      (get-in blueprint [:blueprint :entities])
-      (s/transform [:blueprint :entities s/ALL] (partial mirror-entity axis mirror-config correction))
+      (blueprint/has-entities? blueprint)
+      (s/transform blueprint/entities-path (partial mirror-entity axis mirror-config correction))
       ; tiles
-      (get-in blueprint [:blueprint :tiles])
-      (s/transform [:blueprint :tiles s/ALL] (partial mirror-tile axis correction)))))
+      (blueprint/has-tiles? blueprint)
+      (s/transform blueprint/tiles-path (partial mirror-tile axis (dec correction))))))
