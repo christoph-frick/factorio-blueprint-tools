@@ -25,3 +25,17 @@
                                   {:position {:x 3, :y 0}, :name "concrete"}
                                   {:position {:x 3, :y 1}, :name "concrete"}]}}]
     (is (= orig (t/mirror (t/mirror orig :vertically) :vertically)))))
+
+(deftest test-mirroring-train-stations
+  (are [direction orig target] (= target (t/mirror orig direction))
+    :vertically
+    {:blueprint {:entities [{:entity_number 2, :name "straight-rail", :position {:x -65, :y -143}, :direction 0}
+                            {:entity_number 3, :name "train-stop",    :position {:x -63, :y -143}, :direction 0, :station ""}]}}
+    {:blueprint {:entities [{:entity_number 2, :name "straight-rail", :position {:x 65, :y -143}, :direction 0}
+                            {:entity_number 3, :name "train-stop",    :position {:x 63, :y -143}, :direction 4, :station ""}]}}
+
+    :horizontally
+    {:blueprint {:entities [{:entity_number 1, :name "train-stop",    :position {:x -71, :y -137}, :direction 6, :station ""}
+                            {:entity_number 2, :name "straight-rail", :position {:x -71, :y -135}, :direction 2}]}}
+    {:blueprint {:entities [{:entity_number 1, :name "train-stop",    :position {:x -71, :y 137}, :direction 2, :station ""}
+                            {:entity_number 2, :name "straight-rail", :position {:x -71, :y 135}, :direction 2}]}}))
