@@ -13,5 +13,5 @@
   (tools/controller-set-blueprint :debug state encoded-blueprint))
 
 (defmethod debug :update [_ _ state]
-  {:state (assoc state :output (prn-str (get-in state [:input :blueprint])))})
+  {:state (assoc state :output (get-in state [:input :blueprint]))})
 

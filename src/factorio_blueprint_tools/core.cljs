@@ -1,5 +1,5 @@
 (ns factorio-blueprint-tools.core
-  (:require-macros [factorio-blueprint-tools.macros :as m]) 
+  (:require-macros [factorio-blueprint-tools.macros :as m])
   (:require [factorio-blueprint-tools.controller.tile :as tile-controller]
             [factorio-blueprint-tools.controller.mirror :as mirror-controller]
             [factorio-blueprint-tools.upgrade :as upgrade]
@@ -12,7 +12,8 @@
             [clojure.string :as str]
             [antizer.rum :as ant]
             [rum.core :as rum]
-            [citrus.core :as citrus]))
+            [citrus.core :as citrus]
+            [fipp.edn :as fipp]))
 
 (enable-console-print!)
 
@@ -79,7 +80,7 @@
    [:div {:dangerouslySetInnerHTML {:__html (m/load-markdown "changelog.md")}}]))
 
 
-; Settings 
+; Settings
 
 (rum/defc ContentSettings < rum/static
   []
@@ -204,22 +205,23 @@
 
 ; Debug
 
+(defn pprint
+  [edn]
+  (let [acc (atom "")]
+    (fipp/pprint edn {:print-fn (fn [s] (swap! acc str s))})
+    @acc))
+
 (rum/defc ContentDebug <
   rum/reactive
   [r]
   (ant/layout-content
-    {:style {:padding "1ex 1em"}}
-    [:h2 "Show the content of a blueprint"]
-    (ant/form
-      (BlueprintInput r :debug))
-    (when (rum/react (citrus/subscription r [:debug :input :blueprint]))
-      (ant/form-item {:label "EDN"}
-                     [:div
-                      (ant/input-text-area (assoc ta-no-spellcheck
-                                                  :class "input-result-blueprint"
-                                                  :style {:height "10em" :width "100%"}
-                                                  :value (rum/react (citrus/subscription r [:debug :output]))
-                                                  :onFocus #(.select (-> % .-target))))]))))
+   {:style {:padding "1ex 1em"}}
+   [:h2 "Show the content of a blueprint"]
+   (ant/form
+    (BlueprintInput r :debug))
+   (when (rum/react (citrus/subscription r [:debug :input :blueprint]))
+     (ant/form-item {:label "EDN"}
+                    [:pre {:style {:line-height 1.5}} (pprint (rum/react (citrus/subscription r [:debug :output])))]))))
 
 ;;; Main
 
@@ -262,7 +264,7 @@
                   :mirror mirror-controller/mirror
                   :upgrade upgrade-controller/upgrade
                   :landfill landfill-controller/landfill
-                  :split split-controller/split 
+                  :split split-controller/split
                   :debug debug-controller/debug}
     :effect-handlers {:dispatch dispatch}}))
 
