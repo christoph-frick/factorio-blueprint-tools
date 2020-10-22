@@ -181,6 +181,12 @@
    (when (rum/react (citrus/subscription r [:landfill :input :blueprint]))
      [:div
       (ant/form
+       (ant/form-item {:label "Mode"}
+                      (ant/radio-group {:class "input-landfill-mode"
+                                        :value (rum/react (citrus/subscription r [:landfill :config :mode]))
+                                        :onChange #(citrus/dispatch! r :landfill :set-config :mode (-> % .-target .-value keyword))}
+                                       (for [[option label] [[:full "Full"] [:sparse "Sparse"]]]
+                                         (ant/radio {:key option :value option} label))))
        (BlueprintOutput r :landfill))])))
 
 ; Split

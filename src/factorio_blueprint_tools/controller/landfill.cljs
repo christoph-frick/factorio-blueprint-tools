@@ -3,7 +3,7 @@
             [factorio-blueprint-tools.landfill :as landfill]))
 
 (def default-config
-  {})
+  {:mode :full})
 
 (defmulti landfill identity)
 
@@ -19,5 +19,5 @@
 (defmethod landfill :update [_ _ state]
   (tools/controller-update-result state
                                   default-config
-                                  (fn [blueprint _]
-                                    (landfill/landfill blueprint))))
+                                  (fn [blueprint config]
+                                    (landfill/landfill config blueprint))))
