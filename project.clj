@@ -11,6 +11,7 @@
                  [rum "0.12.3"]
                  [net.ofnir/antizer "3.26.17-1"]
                  [fipp "0.6.23"]
+                 [clj-commons/pushy "0.3.10"]
                  [clj-commons/citrus "3.2.3"]]
 
   :plugins [[lein-figwheel "0.5.19"]

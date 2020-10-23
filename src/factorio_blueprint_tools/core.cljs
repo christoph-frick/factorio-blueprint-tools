@@ -13,6 +13,7 @@
             [antizer.rum :as ant]
             [rum.core :as rum]
             [citrus.core :as citrus]
+            [pushy.core :as pushy]
             [fipp.edn :as fipp]))
 
 (enable-console-print!)
@@ -233,21 +234,48 @@
 
 ; Navigation
 
+(defonce navigations
+  [{:key "about"     :icon "info-circle-o" :title "About"    :component ContentAbout}
+   {:key "tile"      :icon "appstore-o"    :title "Tile"     :component ContentTile}
+   {:key "split"     :icon "scissor"       :title "Split"    :component ContentSplit}
+   {:key "mirror"    :icon "swap"          :title "Mirror"   :component ContentMirror}
+   {:key "upgrade"   :icon "tool"          :title "Upgrade"  :component ContentUpgrade}
+   {:key "landfill"  :icon "table"         :title "Landfill" :component ContentLandfill}
+   {:key "debug"     :icon "bug"           :title "Debug"    :component ContentDebug}
+   {:key "settings"  :icon "setting"       :title "Settings" :component ContentSettings}])
+
+(defn key-to-route
+    [key]
+    (str "/#" key))
+
+(defonce navigations-by-key
+  (into {}
+        (map (juxt (comp key-to-route :key) identity))
+        navigations))
+
+(defonce default-navigation
+  (-> navigations first :key key-to-route))
+
+(declare reconciler)
+
+(defn goto
+  [key]
+  (citrus/dispatch! reconciler :navigation :goto key))
+
+(def history
+  (pushy/pushy
+   goto
+   (fn [key]
+     (if (contains? navigations-by-key key)
+       key
+       default-navigation))))
+
 (defmulti navigation identity)
 
 (defmethod navigation :init []
-  (let [navigations [{:key "about" :icon "info-circle-o" :title "About" :component ContentAbout}
-                     {:key "tile" :icon "appstore-o" :title "Tile" :component ContentTile}
-                     {:key "split" :icon "scissor" :title "Split" :component ContentSplit}
-                     {:key "mirror" :icon "swap" :title "Mirror" :component ContentMirror}
-                     {:key "upgrade" :icon "tool" :title "Upgrade" :component ContentUpgrade}
-                     {:key "landfill" :icon "table" :title "Landfill" :component ContentLandfill}
-                     {:key "debug" :icon "bug" :title "Debug" :component ContentDebug}
-                     {:key "settings " :icon "setting" :title "Settings" :component ContentSettings}]
-        navigations-by-key (into {} (map (juxt :key identity)) navigations)]
-    {:state {:current (-> navigations first :key)
-             :navigations navigations
-             :navigations-by-key navigations-by-key}}))
+  {:state {:current default-navigation
+           :navigations navigations
+           :navigations-by-key navigations-by-key}})
 
 (defmethod navigation :goto [_ [target] state]
   {:state (assoc state :current target)})
@@ -278,7 +306,7 @@
 
 (defn- menu-item
   [{:keys [key icon title]}]
-  (ant/menu-item {:key key :class (str "menu-" key)} [:span (ant/icon {:type icon}) title]))
+  (ant/menu-item {:key (key-to-route key) :class (str "menu-" key)} [:span (ant/icon {:type icon}) title]))
 
 (rum/defc AppHeader < rum/static []
   (ant/layout-header
@@ -309,15 +337,17 @@
                   (ant/menu {:theme "light"
                              :mode "inline"
                              :selectedKeys [current]
-                             :onSelect #(citrus/dispatch! r :navigation :goto (.-key %))
+                             :onSelect #(pushy/set-token! history (.-key %))
                              :style {:min-height "calc(100vh-64px)"}}
                             (map menu-item navigations)))
                  (ant/layout
-                  (if-let [navigation (navigations-by-key current)]
+                  (do
+                    (println navigations-by-key current)
+                    (if-let [navigation (navigations-by-key current)]
                     ((:component navigation) r)
                     (do
                       (ContentAbout r)
-                      (ant/message-error (str "Unknown navigation target: " current))))
+                      (ant/message-error (str "Unknown navigation target: " current)))))
                   (AppFooter))))))
 
 (defonce init-ctrl
@@ -328,5 +358,6 @@
   (rum/mount (App reconciler) (js/document.getElementById "app")))
 
 (init!)
+(pushy/start! history)
 
 (defn on-js-reload [])
