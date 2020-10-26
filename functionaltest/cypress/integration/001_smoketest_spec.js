@@ -1,6 +1,6 @@
 describe('Does it actually run', function() {
 	it('Homepage has content', function() {
-		cy.visit("/")
+		cy.visit("/index.html")
 		cy.contains("Instructions")
 	})
 })

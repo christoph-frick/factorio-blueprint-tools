@@ -1,7 +1,7 @@
 // https://on.cypress.io/custom-commands
 
 Cypress.Commands.add("goto", (query, title) => {
-	cy.visit("/")
+	cy.visit("/index.html")
 	cy.get(query).click()
 	cy.get("h2").should("contain", title)
 })

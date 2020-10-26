@@ -1,4 +1,4 @@
-/resources/public/js/compiled/**
+/resources/public/factorio-blueprint-tools/js/compiled/**
 figwheel_server.log
 pom.xml
 *jar

@@ -31,13 +31,13 @@
                            ;; in the default browser once Figwheel has
                            ;; started and compiled your application.
                            ;; Comment this out once it no longer serves you.
-                           ; :open-urls ["http://localhost:3449/index.html"]
+                           :open-urls ["http://localhost:3449/factorio-blueprint-tools/index.html"]
                            }
 
                 :compiler {:main factorio-blueprint-tools.core
                            :asset-path "js/compiled/out"
-                           :output-to "resources/public/js/compiled/factorio_blueprint_tools.js"
-                           :output-dir "resources/public/js/compiled/out"
+                           :output-to "resources/public/factorio-blueprint-tools/js/compiled/factorio_blueprint_tools.js"
+                           :output-dir "resources/public/factorio-blueprint-tools/js/compiled/out"
                            :source-map-timestamp true
                            ;; To console.log CLJS data-structures make sure you enable devtools in Chrome
                            ;; https://github.com/binaryage/cljs-devtools
@@ -47,7 +47,7 @@
                ;; lein cljsbuild once min
                {:id "min"
                 :source-paths ["src"]
-                :compiler {:output-to "resources/public/js/compiled/factorio_blueprint_tools.js"
+                :compiler {:output-to "resources/public/factorio-blueprint-tools/js/compiled/factorio_blueprint_tools.js"
                            :externs ["externs/pako-externs.js"]
                            :main factorio-blueprint-tools.core
                            :optimizations :advanced
@@ -57,7 +57,7 @@
              ;; :server-port 3449 ;; default
              ;; :server-ip "127.0.0.1"
 
-             :css-dirs ["resources/public/css"] ;; watch and update CSS
+             :css-dirs ["resources/public/factorio-blueprint-tools/css"] ;; watch and update CSS
 
              ;; Start an nREPL server into the running figwheel process
              ;; :nrepl-port 7888
@@ -105,5 +105,5 @@
                    ;; :plugins [[cider/cider-nrepl "0.12.0"]]
                    :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
                    ;; need to add the compliled assets to the :clean-targets
-                   :clean-targets ^{:protect false} ["resources/public/js/compiled"
+                   :clean-targets ^{:protect false} ["resources/public/factorio-blueprint-tools/js/compiled"
                                                      :target-path]}})

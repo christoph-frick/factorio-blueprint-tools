@@ -246,7 +246,7 @@
 
 (defn key-to-route
     [key]
-    (str "/#" key))
+    (str "#" key))
 
 (defonce navigations-by-key
   (into {}
@@ -262,11 +262,19 @@
   [key]
   (citrus/dispatch! reconciler :navigation :goto key))
 
+(defn route-to-key
+  [route]
+  (when-let [idx (some-> route (str/index-of "#"))]
+    (when-let [key (subs route idx)]
+      (when-let [nav (get navigations-by-key key)]
+        key))))
+
 (def history
   (pushy/pushy
    goto
-   (fn [key]
-     (if (contains? navigations-by-key key)
+   (fn [route]
+     (println "search route" route)
+     (if-let [key (route-to-key route)]
        key
        default-navigation))))
 
@@ -342,7 +350,6 @@
                             (map menu-item navigations)))
                  (ant/layout
                   (do
-                    (println navigations-by-key current)
                     (if-let [navigation (navigations-by-key current)]
                     ((:component navigation) r)
                     (do

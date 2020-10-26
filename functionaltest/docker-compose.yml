@@ -11,7 +11,7 @@ services:
                 depends_on:
                         - web
                 environment:
-                        - CYPRESS_baseUrl=http://web
+                        - CYPRESS_baseUrl=http://web/factorio-blueprint-tools
                 working_dir: /app
                 volumes:
                         - "./cypress.json:/app/cypress.json"
