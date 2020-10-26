@@ -7,7 +7,7 @@ services:
                 volumes:
                         - "./public:/usr/share/nginx/html:ro"
         test-runner:
-                image: cypress/included:5.2.0
+                image: cypress/included:5.4.0
                 depends_on:
                         - web
                 environment:
