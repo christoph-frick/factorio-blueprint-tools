@@ -3,7 +3,9 @@
      :clj (:require [factorio-blueprint-tools.macros :as m])))
 
 (def selection-boxes
-  (m/load-edn "selection-boxes.edn"))
+  (assoc
+   (m/load-edn "selection-boxes.edn")
+   :curved-rail [[-2.5 -4.0] [2 4]]))
 
 (def selection-box-fallback [[-0.5 -0.5] [0.5 0.5]])
 

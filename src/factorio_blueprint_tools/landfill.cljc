@@ -17,21 +17,10 @@
           x (range (Math/floor min-x) (Math/ceil max-x) 1)]
       [x y])))
 
-; TODO this needs special cases for at least:
-; - curved rails
-; No need for:
-; - offshore pumps: the position seems fine; the box is to big though
-
-(defmulti landfill-sparse :name)
-
-(defmethod landfill-sparse :default
-  [entity]
-  (landfill-area-to-tile-pos (blueprint/entity-area entity)))
-
 (defn landfill-sparse-1
   [blueprint]
   (if-let [entites (blueprint/entities blueprint)]
-    (let [landfill (into #{} (mapcat landfill-sparse) entites)]
+    (let [landfill (into #{} (mapcat (comp landfill-area-to-tile-pos blueprint/entity-area)) entites)]
       (set-landfill-tiles blueprint landfill))
     blueprint))
 

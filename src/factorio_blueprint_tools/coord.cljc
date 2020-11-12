@@ -9,10 +9,17 @@
                  :west 6
                  :northwest 7})
 
-(def rotation-matrices {(directions :north) [[1 0] [0 1]]
-                        (directions :east) [[0 1] [-1 0]]
-                        (directions :south) [[-1 0] [0 -1]]
-                        (directions :west) [[0 -1] [1 0]]})
+(defn rotation-matrix-for-degree
+  [alpha]
+  (let [theta (* alpha (/ Math/PI 180.0))]
+    [[(Math/cos theta) (Math/sin theta)]
+     [(* -1.0 (Math/sin theta)) (Math/cos theta)]]))
+
+(def rotation-matrices
+  (into {}
+        (map (fn [dir]
+               [dir (rotation-matrix-for-degree (* dir 45))]))
+        (vals directions)))
 
 (defn coord
   ([x y]
@@ -24,7 +31,7 @@
   [f [x y]]
   (coord (f x) (f y)))
 
-(def negate-coord 
+(def negate-coord
   (partial transform-coord (partial * -1)))
 
 (def -ONE (coord -1))
@@ -48,26 +55,26 @@
   [[x y] width height]
   (box (coord x y) (coord (+ x width) (+ y height))))
 
-(defn rotate-coord 
+(defn rotate-coord
   [[x y] dir]
   (let [[[a b] [c d]] (rotation-matrices (or dir 0))]
     (coord
      (+ (* x a) (* y b))
      (+ (* x c) (* y d)))))
 
-(defn translate-coord 
+(defn translate-coord
   [[x y] [v t]]
   (coord
    (+ x v)
    (+ y t)))
 
-(defn rotate-box 
+(defn rotate-box
   [[a b] dir]
   (box
    (rotate-coord a dir)
    (rotate-coord b dir)))
 
-(defn translate-box 
+(defn translate-box
   [[a b] offset]
   (box
    (translate-coord a offset)

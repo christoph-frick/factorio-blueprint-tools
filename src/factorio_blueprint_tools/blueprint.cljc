@@ -14,10 +14,17 @@
   [{:keys [position] :as entity}]
   (coord/coord (:x position) (:y position)))
 
+(defn rotate-selection-box
+  [selection-box name direction]
+  (coord/rotate-box selection-box
+                    (if (and (= name "curved-rail") (odd? direction))
+                      (dec direction)
+                      direction)))
+
 (defn entity-area
   [{:keys [name position direction] :as entity}]
   (-> (sizes/selection-box name)
-      (coord/rotate-box direction)
+      (rotate-selection-box name direction)
       (coord/translate-box (coord/coord (:x position) (:y position)))))
 
 (defn has-items?
