@@ -273,7 +273,6 @@
   (pushy/pushy
    goto
    (fn [route]
-     (println "search route" route)
      (if-let [key (route-to-key route)]
        key
        default-navigation))))
