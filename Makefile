@@ -17,7 +17,7 @@ run-test:force
 test:run-test run-functionaltest
 
 release:test
-	rsync -av --delete resources/public/ docs/
+	rsync -av --delete resources/public/factorio-blueprint-tools/ docs/
 
 resources/selection-boxes.edn:force
 	cd extract && ./extract.sh
