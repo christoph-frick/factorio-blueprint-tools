@@ -37,7 +37,7 @@
 
 (defn- mirror-direction
   [mapping direction]
-  (mapping (or direction 0)))
+  (mapping (blueprint/force-direction direction)))
 
 (def priority-mapping
   (add-inverse {"left" "right"}))

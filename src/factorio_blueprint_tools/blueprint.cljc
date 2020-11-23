@@ -10,16 +10,21 @@
         entities
         (iterate inc 1)))
 
+(defn force-direction
+  [direction]
+  (or direction 0))
+
 (defn entity-coord
   [{:keys [position] :as entity}]
   (coord/coord (:x position) (:y position)))
 
 (defn rotate-selection-box
   [selection-box name direction]
-  (coord/rotate-box selection-box
-                    (if (and (= name "curved-rail") (odd? direction))
-                      (dec direction)
-                      direction)))
+  (let [direction (force-direction direction)]
+    (coord/rotate-box selection-box
+                      (if (and (= name "curved-rail") (odd? direction))
+                        (dec direction)
+                        direction))))
 
 (defn entity-area
   [{:keys [name position direction] :as entity}]
