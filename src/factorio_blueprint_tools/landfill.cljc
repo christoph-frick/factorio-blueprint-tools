@@ -5,7 +5,13 @@
   [blueprint poss]
   (assoc-in blueprint
             [:blueprint :tiles]
-            (for [[x y] poss]
+            (for [[x y] (apply sorted-set-by
+                               (fn [[ax ay] [bx by]]
+                                 (let [y (compare ay by)]
+                                   (if (zero? y)
+                                     (compare ax bx)
+                                     y)))
+                               poss)]
               {:position {:x x :y y} :name "landfill"})))
 
 (defn landfill-area-to-tile-pos
