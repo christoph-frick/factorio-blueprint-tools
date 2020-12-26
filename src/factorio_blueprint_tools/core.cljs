@@ -182,11 +182,17 @@
    (when (rum/react (citrus/subscription r [:landfill :input :blueprint]))
      [:div
       (ant/form
-       (ant/form-item {:label "Mode"}
+       (ant/form-item {:label "Filling mode"}
                       (ant/radio-group {:class "input-landfill-mode"
                                         :value (rum/react (citrus/subscription r [:landfill :config :mode]))
                                         :onChange #(citrus/dispatch! r :landfill :set-config :mode (-> % .-target .-value keyword))}
-                                       (for [[option label] [[:full "Full"] [:sparse "Sparse"]]]
+                                       (for [[option label] [[:full "Full (complete area of blueprint)"] [:sparse "Sparse (area of each entity/tile)"]]]
+                                         (ant/radio {:key option :value option} label))))
+       (ant/form-item {:label "Existing tiles"}
+                      (ant/radio-group {:class "input-landfill-tile-mode"
+                                        :value (rum/react (citrus/subscription r [:landfill :config :tile-mode]))
+                                        :onChange #(citrus/dispatch! r :landfill :set-config :tile-mode (-> % .-target .-value keyword))}
+                                       (for [[option label] [[:remove "Remove tiles"] [:replace "Replace tiles with landfill"] [:to-book "Create a book with landfill and original"]]]
                                          (ant/radio {:key option :value option} label))))
        (BlueprintOutput r :landfill))])))
 

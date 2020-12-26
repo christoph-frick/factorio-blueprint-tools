@@ -1,5 +1,6 @@
 (ns factorio-blueprint-tools.landfill-test
   (:require [clojure.test :refer [deftest is are]]
+            [factorio-blueprint-tools.blueprint :as blueprint]
             [factorio-blueprint-tools.landfill :as sut]))
 
 (deftest test-full-sparse-happy-path
@@ -19,3 +20,58 @@
         sparse (sut/landfill {:mode :sparse} bp)]
     (is (= 21 (count (-> full :blueprint :tiles))))
     (is (= (count (-> bp :blueprint :entities)) (count (-> sparse :blueprint :tiles))))))
+
+(deftest test-tile-modes
+  (let [bp {:blueprint {:entities [{:entity_number 1,
+                                    :name "gun-turret",
+                                    :position {:x 144, :y 69}}],
+                        :tiles [{:position {:x 142, :y 67},
+                                 :name "hazard-concrete-left"}
+                                {:position {:x 142, :y 68},
+                                 :name "hazard-concrete-left"}
+                                {:position {:x 142, :y 69},
+                                 :name "hazard-concrete-left"}
+                                {:position {:x 142, :y 70},
+                                 :name "hazard-concrete-left"}
+                                {:position {:x 143, :y 67},
+                                 :name "hazard-concrete-left"}
+                                {:position {:x 143, :y 68},
+                                 :name "hazard-concrete-left"}
+                                {:position {:x 143, :y 69},
+                                 :name "hazard-concrete-left"}
+                                {:position {:x 143, :y 70},
+                                 :name "hazard-concrete-left"}
+                                {:position {:x 144, :y 67},
+                                 :name "hazard-concrete-left"}
+                                {:position {:x 144, :y 68},
+                                 :name "hazard-concrete-left"}
+                                {:position {:x 144, :y 69},
+                                 :name "hazard-concrete-left"}
+                                {:position {:x 144, :y 70},
+                                 :name "hazard-concrete-left"}
+                                {:position {:x 145, :y 67},
+                                 :name "hazard-concrete-left"}
+                                {:position {:x 145, :y 68},
+                                 :name "hazard-concrete-left"}
+                                {:position {:x 145, :y 69},
+                                 :name "hazard-concrete-left"}
+                                {:position {:x 145, :y 70},
+                                 :name "hazard-concrete-left"}],
+                        :item "blueprint"}}]
+    (are [tile-mode path area] (= area
+                                  (blueprint/area
+                                   blueprint/entity-pos-to-box
+                                   (get-in
+                                    (sut/landfill {:tile-mode tile-mode} bp)
+                                    path)))
+      :remove
+      [:blueprint :tiles]
+      [[143 68] [144 69]]
+
+      :replace
+      [:blueprint :tiles]
+      [[142 67] [145 70]]
+
+      :to-book
+      [:blueprint_book :blueprints 0 :blueprint :tiles]
+      [[142 67] [145 70]])))

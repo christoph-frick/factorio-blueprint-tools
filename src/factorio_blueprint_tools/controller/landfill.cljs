@@ -3,7 +3,8 @@
             [factorio-blueprint-tools.landfill :as landfill]))
 
 (def default-config
-  {:mode :full})
+  {:mode :full
+   :tile-mode :remove})
 
 (defmulti landfill identity)
 

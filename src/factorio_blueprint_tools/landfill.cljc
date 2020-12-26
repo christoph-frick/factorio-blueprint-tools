@@ -1,7 +1,5 @@
 (ns factorio-blueprint-tools.landfill
-  (:require [com.rpl.specter :as s]
-            [factorio-blueprint-tools.blueprint :as blueprint]
-            [factorio-blueprint-tools.coord :as coord]))
+  (:require [factorio-blueprint-tools.blueprint :as blueprint]))
 
 (defn set-landfill-tiles
   [blueprint poss]
@@ -13,27 +11,62 @@
 (defn landfill-area-to-tile-pos
   [area]
   (let [[[min-x min-y] [max-x max-y]] area]
-    (for [y (range (Math/floor min-y) (Math/ceil max-y) 1)
-          x (range (Math/floor min-x) (Math/ceil max-x) 1)]
-      [x y])))
+    (into #{}
+          (for [y (range (Math/floor min-y) (Math/ceil max-y) 1)
+                x (range (Math/floor min-x) (Math/ceil max-x) 1)]
+            [(int x) (int y)]))))
 
-(defn landfill-sparse-1
+(defn landfill-sparse-entities
   [blueprint]
   (if-let [entites (blueprint/entities blueprint)]
-    (let [landfill (into #{} (mapcat (comp landfill-area-to-tile-pos blueprint/entity-area)) entites)]
-      (set-landfill-tiles blueprint landfill))
-    blueprint))
+    (into #{} (mapcat (comp landfill-area-to-tile-pos blueprint/entity-area)) entites)
+    #{}))
 
-(defn landfill-full-1
+(defn landfill-sparse-tiles
+  [blueprint]
+  (if (blueprint/has-tiles? blueprint)
+    (into #{} (map blueprint/entity-coord (blueprint/tiles blueprint)))
+    #{}))
+
+(defn landfill-full-entities
   [blueprint]
   (if-let [area (blueprint/entities-area blueprint)]
-    (set-landfill-tiles blueprint (landfill-area-to-tile-pos area))
-    blueprint))
+    (landfill-area-to-tile-pos area)
+    #{}))
+
+(defn landfill-full-tiles
+  [blueprint]
+  (if (blueprint/has-tiles? blueprint)
+    (landfill-area-to-tile-pos (blueprint/tiles-area blueprint))
+    #{}))
+
+(declare to-book-1)
+
+(defn landfill-1
+  [mode tile-mode blueprint]
+  (if (= tile-mode :to-book)
+    (to-book-1 mode blueprint)
+    (let [entitiies-dispatch {:full landfill-full-entities
+                              :sparse landfill-sparse-entities}
+          tiles-dispatch {:full landfill-full-tiles
+                          :sparse landfill-sparse-tiles}
+          tiles ((entitiies-dispatch mode) blueprint)
+          tiles (if (= tile-mode :replace)
+                  (into tiles ((tiles-dispatch mode) blueprint))
+                  tiles)]
+      (set-landfill-tiles blueprint tiles))))
+
+(defn to-book-1
+  [mode blueprint]
+  (blueprint/book "Landfill"
+                  [(update
+                    (landfill-1 mode :replace blueprint)
+                    :blueprint
+                    dissoc :entities)
+                   blueprint]))
 
 (defn landfill
-  [{:keys [mode]} blueprint-or-book]
+  [{:keys [mode tile-mode] :or {mode :sparse tile-mode :replace}} blueprint-or-book]
   (blueprint/map-blueprint-or-book
-   (if (= mode :sparse)
-     landfill-sparse-1
-     landfill-full-1)
+   (partial landfill-1 mode tile-mode)
    blueprint-or-book))

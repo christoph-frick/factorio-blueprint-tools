@@ -72,10 +72,15 @@
    coord/NIL-BOX
    items))
 
+(defn entity-pos-to-box
+  [entity]
+  (let [pos (entity-coord entity)]
+    (coord/box pos pos)))
+
 (defn positions-area
   [blueprint]
   (area
-   #(let [pos (entity-coord %)] (coord/box pos pos))
+   entity-pos-to-box
    (entities blueprint)))
 
 (defn entities-area
@@ -121,10 +126,11 @@
   {:blueprint_book
    {:item "blueprint-book"
     :label label
-    :blueprints (map-indexed
-                 (fn [idx blueprint]
-                   (assoc blueprint :index idx))
-                 blueprints)}})
+    :blueprints (into []
+                      (map-indexed
+                       (fn [idx blueprint]
+                         (assoc blueprint :index idx))
+                       blueprints))}})
 
 (defn blueprint?
   [maybe-blueprint]
