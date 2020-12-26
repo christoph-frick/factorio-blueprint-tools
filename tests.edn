@@ -1,0 +1,10 @@
+#kaocha/v1
+{:tests [{:id          :unit
+          :test-paths  ["test" "src"]
+          :ns-patterns [".*"]
+          :focus-meta []}]
+ :plugins [:kaocha.plugin/profiling
+           :kaocha.plugin/notifier]
+ :kaocha.plugin.notifier/command "terminal-notifier -message '%{message}' -title '%{title}'"
+ :kaocha.plugin.profiling/count 3
+ :kaocha.plugin.profiling/profiling? true}
