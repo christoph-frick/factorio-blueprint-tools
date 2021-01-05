@@ -1,5 +1,6 @@
 ## Changelog
 
+- 2020-12-26 | New feature : More options for landfill to deal with tiles
 - 2020-11-12 | Bugfix      : Landfill for curved rails
 - 2020-10-22 | New feature : Sparse landfill
 - 2020-09-27 | Bugfix      : Tiling a blueprint includes the tiles
