@@ -34,6 +34,12 @@
               :showIcon true
               :type "error"}))
 
+(rum/defc BlueprintPreview < rum/static
+  [blueprint]
+  [:span
+   {:style {:padding-left "24px"}
+    :dangerouslySetInnerHTML {:__html (preview/preview blueprint)}}])
+
 (rum/defc BlueprintInput <
   rum/reactive
   [r controller]
@@ -47,7 +53,7 @@
                                               :onChange #(citrus/dispatch! r controller :set-blueprint (-> % .-target .-value))
                                               :onFocus #(.select (-> % .-target))))
                   (when-let [blueprint (rum/react (citrus/subscription r [controller :input :blueprint]))]
-                    (preview/preview blueprint))
+                    (BlueprintPreview blueprint))
                   (when-let [error (rum/react (citrus/subscription r [controller :input :error]))]
                     (alert-error (str "Could not load blueprint.  Please make sure to copy and paste the whole string from Factorio. (Error: " error ")")))]))
 
@@ -64,7 +70,7 @@
                                               :onFocus #(.select (-> % .-target))))
                   (when-let [blueprint (rum/react (citrus/subscription r [controller :output :blueprint]))]
                     (when (:blueprint blueprint)
-                      (preview/preview blueprint)))]))
+                      (BlueprintPreview blueprint)))]))
 
 ; About
 

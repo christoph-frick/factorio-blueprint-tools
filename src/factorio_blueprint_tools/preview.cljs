@@ -1,7 +1,9 @@
 (ns factorio-blueprint-tools.preview
   (:require [factorio-blueprint-tools.blueprint :as blueprint]
             [goog.string]
-            [goog.color]))
+            [goog.color]
+            [hiccups.runtime :as hiccupsrt])
+  (:require-macros [hiccups.core :as hiccups :refer [html]]))
 
 (defn color-by-entity-name
   [entity-name]
@@ -23,10 +25,12 @@
   (let [entities (blueprint/entities blueprint)
         tiles (blueprint/tiles blueprint)
         [[ax1 ay1] [ax2 ay2]] (blueprint/blueprint-area blueprint)]
-    [:span {:style {:padding-left "24px"}}
+    (html
      [:svg
-      {:width "10em" :height "10em" :viewBox (str ax1 " " ay1 " " (- ax2 ax1) " " (- ay2 ay1)) :style {:vertical-align "top" :outline "1px solid #d9d9d9" :background-color "#fff"}}
-
+      {:width "10em"
+       :height "10em"
+       :viewBox (str ax1 " " ay1 " " (- ax2 ax1) " " (- ay2 ay1))
+       :style "vertical-align: top; outline: 1px solid #d9d9d9; background-color: #fff"}
       (when (seq tiles)
         [:g {:stroke "white" :stroke-width "0.05%" :opacity "50%"}
          (for [t tiles
@@ -48,4 +52,4 @@
       (when (blueprint/absolute-snapping? blueprint)
         (let [[width height] (blueprint/snap-grid blueprint)]
           [:g {:stroke "lightgreen" :stroke-width "5%" :stroke-dasharray "0.33"}
-           [:rect {:fill "none" :x 0 :y 0 :width width :height height}]]))]]))
+           [:rect {:fill "none" :x 0 :y 0 :width width :height height}]]))])))
