@@ -268,7 +268,7 @@
   [route]
   (when-let [idx (some-> route (str/index-of "#"))]
     (when-let [key (subs route idx)]
-      (when-let [nav (get navigations-by-key key)]
+      (when-let [_ (get navigations-by-key key)]
         key))))
 
 (def history
