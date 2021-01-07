@@ -350,13 +350,8 @@
                              :style {:min-height "calc(100vh-64px)"}}
                             (map menu-item navigations)))
                  (ant/layout
-                  (do
-                    (if-let [navigation (navigations-by-key current)]
-                    ((:component navigation) r)
-                    (do
-                      (ContentAbout r)
-                      (ant/message-error (str "Unknown navigation target: " current)))))
-                  (AppFooter))))))
+                    ((:component (navigations-by-key current)) r)
+                    (AppFooter))))))
 
 (defonce init-ctrl
   (citrus/broadcast-sync! reconciler :init))
