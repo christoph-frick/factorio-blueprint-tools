@@ -47,9 +47,9 @@
                                               :onChange #(citrus/dispatch! r controller :set-blueprint (-> % .-target .-value))
                                               :onFocus #(.select (-> % .-target))))
                   (when-let [blueprint (rum/react (citrus/subscription r [controller :input :blueprint]))]
-                    (preview/preview blueprint))]
-                 (when-let [error (rum/react (citrus/subscription r [controller :input :error]))]
-                   (alert-error (str "Could not load blueprint.  Please make sure to copy and paste the whole string from Factorio. (Error: " error ")")))))
+                    (preview/preview blueprint))
+                  (when-let [error (rum/react (citrus/subscription r [controller :input :error]))]
+                    (alert-error (str "Could not load blueprint.  Please make sure to copy and paste the whole string from Factorio. (Error: " error ")")))]))
 
 (rum/defc BlueprintOutput <
   rum/reactive
@@ -107,19 +107,18 @@
    (ant/form
     (BlueprintInput r :tile))
    (when (rum/react (citrus/subscription r [:tile :input :blueprint]))
-     [:div
-      (ant/form
-       (ant/form-item {:label "Tiles on X axis"}
-                      (ant/input-number {:class "input-tile-x"
-                                         :value (rum/react (citrus/subscription r [:tile :config :tile-x]))
-                                         :onChange #(citrus/dispatch! r :tile :set-config :tile-x %)
-                                         :min 1}))
-       (ant/form-item {:label "Tiles on Y axis"}
-                      (ant/input-number {:class "input-tile-y"
-                                         :value (rum/react (citrus/subscription r [:tile :config :tile-y]))
-                                         :onChange #(citrus/dispatch! r :tile :set-config :tile-y %)
-                                         :min 1}))
-       (BlueprintOutput r :tile))])))
+     (ant/form
+      (ant/form-item {:label "Tiles on X axis"}
+                     (ant/input-number {:class "input-tile-x"
+                                        :value (rum/react (citrus/subscription r [:tile :config :tile-x]))
+                                        :onChange #(citrus/dispatch! r :tile :set-config :tile-x %)
+                                        :min 1}))
+      (ant/form-item {:label "Tiles on Y axis"}
+                     (ant/input-number {:class "input-tile-y"
+                                        :value (rum/react (citrus/subscription r [:tile :config :tile-y]))
+                                        :onChange #(citrus/dispatch! r :tile :set-config :tile-y %)
+                                        :min 1}))
+      (BlueprintOutput r :tile)))))
 
 ; Mirror
 
@@ -132,16 +131,15 @@
    (ant/form
     (BlueprintInput r :mirror))
    (when (rum/react (citrus/subscription r [:mirror :input :blueprint]))
-     [:div
-      (ant/form
-       (ant/form-item {:label "Direction"}
-                      (ant/radio-group {:class "input-mirror-direction"
-                                        :value (rum/react (citrus/subscription r [:mirror :config :direction]))
-                                        :onChange #(citrus/dispatch! r :mirror :set-config :direction (-> % .-target .-value keyword))}
-                                       (for [[option label] [[:vertically "Vertically"] [:horizontally "Horizontally"]]]
-                                         (ant/radio {:key option :value option} label))))
+     (ant/form
+      (ant/form-item {:label "Direction"}
+                     (ant/radio-group {:class "input-mirror-direction"
+                                       :value (rum/react (citrus/subscription r [:mirror :config :direction]))
+                                       :onChange #(citrus/dispatch! r :mirror :set-config :direction (-> % .-target .-value keyword))}
+                                      (for [[option label] [[:vertically "Vertically"] [:horizontally "Horizontally"]]]
+                                        (ant/radio {:key option :value option} label))))
 
-       (BlueprintOutput r :mirror))])))
+      (BlueprintOutput r :mirror)))))
 
 ; Upgrade
 
@@ -154,17 +152,16 @@
    (ant/form
     (BlueprintInput r :upgrade))
    (when-let [blueprint (rum/react (citrus/subscription r [:upgrade :input :blueprint]))]
-     [:div
-      (let [upgradable (upgrade/upgradeable-from-blueprint blueprint)
-            order (filter upgradable upgrade/upgrades-order)]
-        (ant/form
-         (for [from order]
-           (ant/form-item {:label (upgrade/upgrades-names from)}
-                          (ant/radio-group {:value (rum/react (citrus/subscription r [:upgrade :config from]))
-                                            :onChange #(citrus/dispatch! r :upgrade :set-config from (-> % .-target .-value))}
-                                           (for [option (upgrade/upgrades-by-key from)]
-                                             (ant/radio {:key option :value option} (upgrade/upgrades-names option))))))
-         (BlueprintOutput r :upgrade)))])))
+     (let [upgradable (upgrade/upgradeable-from-blueprint blueprint)
+           order (filter upgradable upgrade/upgrades-order)]
+       (ant/form
+        (for [from order]
+          (ant/form-item {:label (upgrade/upgrades-names from)}
+                         (ant/radio-group {:value (rum/react (citrus/subscription r [:upgrade :config from]))
+                                           :onChange #(citrus/dispatch! r :upgrade :set-config from (-> % .-target .-value))}
+                                          (for [option (upgrade/upgrades-by-key from)]
+                                            (ant/radio {:key option :value option} (upgrade/upgrades-names option))))))
+        (BlueprintOutput r :upgrade))))))
 
 ; Landfill
 
@@ -180,21 +177,20 @@
    (ant/form
     (BlueprintInput r :landfill))
    (when (rum/react (citrus/subscription r [:landfill :input :blueprint]))
-     [:div
-      (ant/form
-       (ant/form-item {:label "Filling mode"}
-                      (ant/radio-group {:class "input-landfill-mode"
-                                        :value (rum/react (citrus/subscription r [:landfill :config :mode]))
-                                        :onChange #(citrus/dispatch! r :landfill :set-config :mode (-> % .-target .-value keyword))}
-                                       (for [[option label] [[:full "Full (complete area of blueprint)"] [:sparse "Sparse (area of each entity/tile)"]]]
-                                         (ant/radio {:key option :value option} label))))
-       (ant/form-item {:label "Existing tiles"}
-                      (ant/radio-group {:class "input-landfill-tile-mode"
-                                        :value (rum/react (citrus/subscription r [:landfill :config :tile-mode]))
-                                        :onChange #(citrus/dispatch! r :landfill :set-config :tile-mode (-> % .-target .-value keyword))}
-                                       (for [[option label] [[:remove "Remove tiles"] [:replace "Replace tiles with landfill"] [:to-book "Create a book with landfill and original"]]]
-                                         (ant/radio {:key option :value option} label))))
-       (BlueprintOutput r :landfill))])))
+     (ant/form
+      (ant/form-item {:label "Filling mode"}
+                     (ant/radio-group {:class "input-landfill-mode"
+                                       :value (rum/react (citrus/subscription r [:landfill :config :mode]))
+                                       :onChange #(citrus/dispatch! r :landfill :set-config :mode (-> % .-target .-value keyword))}
+                                      (for [[option label] [[:full "Full (complete area of blueprint)"] [:sparse "Sparse (area of each entity/tile)"]]]
+                                        (ant/radio {:key option :value option} label))))
+      (ant/form-item {:label "Existing tiles"}
+                     (ant/radio-group {:class "input-landfill-tile-mode"
+                                       :value (rum/react (citrus/subscription r [:landfill :config :tile-mode]))
+                                       :onChange #(citrus/dispatch! r :landfill :set-config :tile-mode (-> % .-target .-value keyword))}
+                                      (for [[option label] [[:remove "Remove tiles"] [:replace "Replace tiles with landfill"] [:to-book "Create a book with landfill and original"]]]
+                                        (ant/radio {:key option :value option} label))))
+      (BlueprintOutput r :landfill)))))
 
 ; Split
 
@@ -231,10 +227,10 @@
    {:style {:padding "1ex 1em"}}
    [:h2 "Show the content of a blueprint"]
    (ant/form
-    (BlueprintInput r :debug))
-   (when (rum/react (citrus/subscription r [:debug :input :blueprint]))
-     (ant/form-item {:label "EDN"}
-                    [:pre {:style {:line-height 1.5}} (pprint (rum/react (citrus/subscription r [:debug :output])))]))))
+    (BlueprintInput r :debug)
+    (when (rum/react (citrus/subscription r [:debug :input :blueprint]))
+      (ant/form-item {:label "EDN"}
+                     [:pre {:style {:line-height 1.5}} (pprint (rum/react (citrus/subscription r [:debug :output])))])))))
 
 ;;; Main
 
