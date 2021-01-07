@@ -260,10 +260,6 @@
 
 (declare reconciler)
 
-(defn goto
-  [key]
-  (citrus/dispatch! reconciler :navigation :goto key))
-
 (defn route-to-key
   [route]
   (when-let [idx (some-> route (str/index-of "#"))]
@@ -273,11 +269,15 @@
 
 (def history
   (pushy/pushy
-   goto
+   #(citrus/dispatch! reconciler :navigation :goto %) ; not partial!
    (fn [route]
-     (if-let [key (route-to-key route)]
-       key
+     (if-let [nav-key (route-to-key route)]
+       nav-key
        default-navigation))))
+
+(defn nav!
+  [nav-key]
+  (pushy/set-token! history nav-key))
 
 (defmulti navigation identity)
 
@@ -346,7 +346,7 @@
                   (ant/menu {:theme "light"
                              :mode "inline"
                              :selectedKeys [current]
-                             :onSelect #(pushy/set-token! history (.-key %))
+                             :onSelect #(nav! (.-key %))
                              :style {:min-height "calc(100vh-64px)"}}
                             (map menu-item navigations)))
                  (ant/layout
