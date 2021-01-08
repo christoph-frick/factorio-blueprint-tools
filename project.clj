@@ -15,8 +15,8 @@
                    [clj-commons/pushy "0.3.10"]
                    [clj-commons/citrus "3.2.3"]]
 
-    :plugins [[lein-figwheel "0.5.19"]
-              [lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]]
+    :plugins [[lein-figwheel "0.5.20"]
+              [lein-cljsbuild "1.1.8" :exclusions [[org.clojure/clojure]]]]
 
     :source-paths ["src"]
 
@@ -102,7 +102,7 @@
     :profiles {:kaocha {:dependencies [[lambdaisland/kaocha "1.0.732"]]}
                :dev {:dependencies [[binaryage/devtools "1.0.2"]
                                     [figwheel-sidecar "0.5.20"]
-                                    [cider/piggieback "0.5.1"]]
+                                    [cider/piggieback "0.5.2"]]
                      ;; need to add dev source path here to get user.clj loaded
                      :source-paths ["src" "dev"]
                      ;; for CIDER
