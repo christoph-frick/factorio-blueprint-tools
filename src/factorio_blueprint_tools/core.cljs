@@ -34,6 +34,16 @@
               :showIcon true
               :type "error"}))
 
+(defn radio-options
+  [options]
+  (for [[option label help] options]
+    (ant/radio
+     {:key option
+      :value option}
+     [:span label
+      " "
+      [:span {:class "ant-form-explain"} help]])))
+
 (rum/defc BlueprintPreview < rum/static
   [blueprint]
   [:span
@@ -188,14 +198,15 @@
                      (ant/radio-group {:class "input-landfill-mode"
                                        :value (rum/react (citrus/subscription r [:landfill :config :mode]))
                                        :onChange #(citrus/dispatch! r :landfill :set-config :mode (-> % .-target .-value keyword))}
-                                      (for [[option label] [[:full "Full (complete area of blueprint)"] [:sparse "Sparse (area of each entity/tile)"]]]
-                                        (ant/radio {:key option :value option} label))))
+                                      (radio-options [[:full "Full" "(complete area/bounding box of blueprint)"]
+                                                      [:sparse "Sparse" "(only under entities; keeps gap for pumps)"]])))
       (ant/form-item {:label "Existing tiles"}
                      (ant/radio-group {:class "input-landfill-tile-mode"
                                        :value (rum/react (citrus/subscription r [:landfill :config :tile-mode]))
                                        :onChange #(citrus/dispatch! r :landfill :set-config :tile-mode (-> % .-target .-value keyword))}
-                                      (for [[option label] [[:remove "Remove tiles"] [:replace "Replace tiles with landfill"] [:to-book "Create a book with landfill and original"]]]
-                                        (ant/radio {:key option :value option} label))))
+                                      (radio-options [[:remove "Remove" "(all tiles are removed)"]
+                                                      [:replace "Replace" "(tiles are removed, but landfill is also added where tiles where honouring the filling mode)"]
+                                                      [:to-book "Blueprint book" "(separate blueprint for landfill and original as book)"]])))
       (BlueprintOutput r :landfill)))))
 
 ; Split
