@@ -8,13 +8,12 @@
             [factorio-blueprint-tools.controller.split :as split-controller]
             [factorio-blueprint-tools.controller.debug :as debug-controller]
             [factorio-blueprint-tools.preview :as preview]
-            [factorio-blueprint-tools.serialization :as ser]
             [clojure.string :as str]
+            [cljs.pprint]
             [antizer.rum :as ant]
             [rum.core :as rum]
             [citrus.core :as citrus]
-            [pushy.core :as pushy]
-            [fipp.edn :as fipp]))
+            [pushy.core :as pushy]))
 
 (enable-console-print!)
 
@@ -233,9 +232,8 @@
 
 (defn pprint
   [edn]
-  (let [acc (atom "")]
-    (fipp/pprint edn {:print-fn (fn [s] (swap! acc str s))})
-    @acc))
+  (with-out-str
+      (cljs.pprint/pprint edn)))
 
 (rum/defc ContentDebug <
   rum/reactive

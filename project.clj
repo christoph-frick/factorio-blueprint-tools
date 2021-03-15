@@ -10,7 +10,6 @@
                    [markdown-clj "1.10.5"]
                    [rum "0.12.3"]
                    [net.ofnir/antizer "3.26.17-1"]
-                   [fipp "0.6.23"]
                    [hiccups "0.3.0"]
                    [clj-commons/pushy "0.3.10"]
                    [clj-commons/citrus "3.2.3"]]
