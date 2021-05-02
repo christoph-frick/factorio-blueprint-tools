@@ -3,12 +3,12 @@
     :url "https://github.com/christoph-frick/factorio-blueprint-tools"
     :min-lein-version "2.7.1"
 
-    :dependencies [[org.clojure/clojure "1.10.1"]
-                   [org.clojure/clojurescript "1.10.773"]
+    :dependencies [[org.clojure/clojure "1.10.3"]
+                   [org.clojure/clojurescript "1.10.844"]
                    ; [org.clojure/core.async  "0.3.443"]
                    [com.rpl/specter "1.1.3"]
                    [markdown-clj "1.10.5"]
-                   [rum "0.12.3"]
+                   [rum "0.12.6"]
                    [net.ofnir/antizer "3.26.17-1"]
                    [hiccups "0.3.0"]
                    [clj-commons/pushy "0.3.10"]
@@ -98,8 +98,8 @@
     ;; Setting up nREPL for Figwheel and ClojureScript dev
     ;; Please see:
     ;; https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl
-    :profiles {:kaocha {:dependencies [[lambdaisland/kaocha "1.0.732"]]}
-               :dev {:dependencies [[binaryage/devtools "1.0.2"]
+    :profiles {:kaocha {:dependencies [[lambdaisland/kaocha "1.0.829"]]}
+               :dev {:dependencies [[binaryage/devtools "1.0.3"]
                                     [figwheel-sidecar "0.5.20"]
                                     [cider/piggieback "0.5.2"]]
                      ;; need to add dev source path here to get user.clj loaded
