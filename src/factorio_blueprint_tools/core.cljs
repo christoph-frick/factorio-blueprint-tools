@@ -109,7 +109,7 @@
    (ant/form
     (ant/form-item {:label "Factorio entities"}
                    (ant/select {:value "vanilla-1.0"}
-                               (ant/select-option {:key "vanilla-1.0"} "Vanilla 1.0"))))))
+                               (ant/select-option {:key "vanilla-1.0"} "Vanilla 1.1"))))))
 
 ; Tile
 

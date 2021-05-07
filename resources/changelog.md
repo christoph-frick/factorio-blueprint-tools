@@ -1,5 +1,6 @@
 ## Changelog
 
+- `2021-05-07` | Update      : Entities from Factorio 1.1
 - `2020-12-26` | New feature : More options for landfill to deal with tiles
 - `2020-11-12` | Bugfix      : Landfill for curved rails
 - `2020-10-22` | New feature : Sparse landfill
