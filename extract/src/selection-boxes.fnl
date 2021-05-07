@@ -12,28 +12,29 @@
                  :difficulty_settings {:recipe_difficulty {:normal 0}
                                        :technology_difficulty {:normal 0}}})
 
-(set package.path (.. package.path ";" 
+(set package.path (.. package.path ";"
                       "/var/factorio-data/core/lualib/?.lua" ";"))
 (require :dataloader)
 
 ; FIXME: the package.path/require works for now.  `dofile` might be the proper way
 (local package-path package.path)
 
-(set package.path (.. package-path ";" 
+(set package.path (.. package-path ";"
                       "/var/factorio-data/core/?.lua" ";"
                       "/var/factorio-data/?.lua"))
 (require :core.data)
 
-(set package.path (.. package-path ";" 
+(set package.path (.. package-path ";"
                       "/var/factorio-data/base/?.lua" ";"
-                      "/var/factorio-data/?.lua"))
+                      "/var/factorio-data/?.lua" ";"
+                      "/var/factorio-blueprint-tools/?.lua"))
 (require :base.data)
 
 (local view (require :fennelview))
 
 ; -- find all entities with a selection_box
-(print 
-  (view 
+(print
+  (view
     (let [result {}]
       (each [ok ov (pairs _G.data.raw)]
         (each [ik iv (pairs ov)]
