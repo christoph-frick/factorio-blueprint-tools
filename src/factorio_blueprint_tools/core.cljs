@@ -119,6 +119,7 @@
   (ant/layout-content
    {:style {:padding "1ex 1em"}}
    [:h2 "Tile a blueprint"]
+   [:p "Arrange copies of the blueprint in a grid.  E.g. take a six electric miner blueprint and tile 15x15 to cover even the biggest resource fields" ]
    (ant/form
     (BlueprintInput r :tile))
    (when (rum/react (citrus/subscription r [:tile :input :blueprint]))
@@ -143,6 +144,7 @@
   (ant/layout-content
    {:style {:padding "1ex 1em"}}
    [:h2 "Mirror a blueprint"]
+   [:p "Mirror the blueprint either vertically or horizontally"]
    (ant/form
     (BlueprintInput r :mirror))
    (when (rum/react (citrus/subscription r [:mirror :input :blueprint]))
@@ -164,6 +166,7 @@
   (ant/layout-content
    {:style {:padding "1ex 1em"}}
    [:h2 "Upgrade (or downgrade) a blueprint"]
+   [:p "Decide what common upgradeable entities (e.g. inserters) to upgrade.  Also supports downgrading (e.g. you have a great blueprint but not the tech yet)"]
    (ant/form
     (BlueprintInput r :upgrade))
    (when-let [blueprint (rum/react (citrus/subscription r [:upgrade :input :blueprint]))]
@@ -186,6 +189,7 @@
   (ant/layout-content
    {:style {:padding "1ex 1em"}}
    [:h2 "Add landfill as tiles under a blueprint"]
+   [:p "Put landfill under a blueprint"]
    (ant/alert {:message "Please note, that the modified blueprint can not be placed in one go in Factorio right now.  If there are entities on water, they can not be placed.  Force-place (shift) the blueprint to build the landfill and all placeable entities first, and once the landfill is in, place the blueprint again."
                :showIcon true
                :type "warning"})
@@ -216,6 +220,7 @@
   (ant/layout-content
    {:style {:padding "1ex 1em"}}
    [:h2 "Splits a blueprint into multiple tiles"]
+   [:p "Split a large blueprint into tiles to make it easier to place in game"]
    (ant/form
     (BlueprintInput r :split))
    (when (rum/react (citrus/subscription r [:split :input :blueprint]))
