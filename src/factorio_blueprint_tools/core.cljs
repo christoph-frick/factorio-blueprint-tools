@@ -6,6 +6,7 @@
             [factorio-blueprint-tools.controller.upgrade :as upgrade-controller]
             [factorio-blueprint-tools.controller.landfill :as landfill-controller]
             [factorio-blueprint-tools.controller.split :as split-controller]
+            [factorio-blueprint-tools.controller.buffer :as buffer-controller]
             [factorio-blueprint-tools.controller.debug :as debug-controller]
             [factorio-blueprint-tools.preview :as preview]
             [clojure.string :as str]
@@ -233,6 +234,25 @@
                                          :min 32}))
        (BlueprintOutput r :split))])))
 
+; Buffer
+
+(rum/defc ContentBuffer <
+  rum/reactive
+  [r]
+  (ant/layout-content
+   {:style {:padding "1ex 1em"}}
+   [:h2 "Create buffer chests"]
+   [:p "Turn a blueprint into a blueprint for buffer chests requesting the initial blueprint"]
+   (ant/alert {:message "This is currently under development"
+               :showIcon true
+               :type "warning"})
+   (ant/form
+    (BlueprintInput r :buffer))
+   (when (rum/react (citrus/subscription r [:buffer :input :blueprint]))
+     [:div
+      (ant/form
+       (BlueprintOutput r :buffer))])))
+
 ; Debug
 
 (defn pprint
@@ -257,14 +277,15 @@
 ; Navigation
 
 (defonce navigations
-  [{:key "about"     :icon "info-circle-o" :title "About"    :component ContentAbout}
-   {:key "tile"      :icon "appstore-o"    :title "Tile"     :component ContentTile}
-   {:key "split"     :icon "scissor"       :title "Split"    :component ContentSplit}
-   {:key "mirror"    :icon "swap"          :title "Mirror"   :component ContentMirror}
-   {:key "upgrade"   :icon "tool"          :title "Upgrade"  :component ContentUpgrade}
-   {:key "landfill"  :icon "table"         :title "Landfill" :component ContentLandfill}
-   {:key "debug"     :icon "bug"           :title "Debug"    :component ContentDebug}
-   {:key "settings"  :icon "setting"       :title "Settings" :component ContentSettings}])
+  [{:key "about"    :icon "info-circle-o" :title "About"        :component ContentAbout}
+   {:key "tile"     :icon "appstore-o"    :title "Tile"         :component ContentTile}
+   {:key "split"    :icon "scissor"       :title "Split"        :component ContentSplit}
+   {:key "mirror"   :icon "swap"          :title "Mirror"       :component ContentMirror}
+   {:key "upgrade"  :icon "tool"          :title "Upgrade"      :component ContentUpgrade}
+   {:key "landfill" :icon "table"         :title "Landfill"     :component ContentLandfill}
+   {:key "buffer"   :icon "filter"        :title "Buffer-Chest" :component ContentBuffer}
+   {:key "debug"    :icon "bug"           :title "Debug"        :component ContentDebug}
+   {:key "settings" :icon "setting"       :title "Settings"     :component ContentSettings}])
 
 (defn key-to-route
     [key]
@@ -328,6 +349,7 @@
                   :upgrade upgrade-controller/upgrade
                   :landfill landfill-controller/landfill
                   :split split-controller/split
+                  :buffer buffer-controller/buffer
                   :debug debug-controller/debug}
     :effect-handlers {:dispatch dispatch}}))
 
