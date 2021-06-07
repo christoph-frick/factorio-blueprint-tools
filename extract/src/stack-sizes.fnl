@@ -2,4 +2,4 @@
 
 (local s (require :setup))
 
-(s.pr (s.extract "selection_box"))
+(s.pr (s.extract "stack_size"))
