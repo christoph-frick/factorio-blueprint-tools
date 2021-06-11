@@ -271,7 +271,9 @@
     (BlueprintInput r :debug)
     (when (rum/react (citrus/subscription r [:debug :input :blueprint]))
       (ant/form-item {:label "EDN"}
-                     [:pre {:style {:line-height 1.5}} (pprint (rum/react (citrus/subscription r [:debug :output])))])))))
+                     (ant/input-text-area {:style {:font-family "monospace"}
+                                           :auto-size true
+                                           :value (pprint (rum/react (citrus/subscription r [:debug :output])))}))))))
 
 ;;; Main
 
