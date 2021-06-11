@@ -11,9 +11,9 @@ Cypress.Commands.add("fakePaste", {prevSubject: true}, (subject, content) => {
 })
 
 Cypress.Commands.add("pasteBlueprint", (content) => {
-	return cy.get(".input-blueprint").fakePaste(content)
+	return cy.get("textarea.input-blueprint").fakePaste(content)
 })
 
 Cypress.Commands.add("assertResultBlueprint", (content) => {
-	cy.get(".input-result-blueprint").should("have.value", content)
+	cy.get("textarea.input-result-blueprint").should("have.value", content)
 })

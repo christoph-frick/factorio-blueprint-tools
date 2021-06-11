@@ -58,6 +58,7 @@
                  [:div
                   (ant/input-text-area (assoc ta-no-spellcheck
                                               :class "input-blueprint"
+                                              :allow-clear true
                                               :style {:height "10em" :width "calc(100% - 10em - 24px)"}
                                               :value (rum/react (citrus/subscription r [controller :input :encoded]))
                                               :onChange #(citrus/dispatch! r controller :set-blueprint (-> % .-target .-value))
