@@ -3,11 +3,23 @@
             [factorio-blueprint-tools.sizes :as sizes]
             [com.rpl.specter :as s]))
 
-(def buffer-chest-slots 48)
+(defonce buffer-chest-slots 48)
+
+; some entities are not known by the same name in the filters
+; TODO: this list might not be complete
+(defonce entity-name-to-request-item-lut
+    {"curved-rail" "rail"
+     "straight-rail" "rail"})
+
+(defn entity-name-to-request-item
+  [name]
+  (get entity-name-to-request-item-lut name name))
 
 (defn histogram
   [blueprint]
-  (frequencies (s/select (conj blueprint/entities-path :name) blueprint)))
+  (frequencies
+   (map entity-name-to-request-item
+        (s/select (conj blueprint/entities-path :name) blueprint))))
 
 (defn next-request-filter
   [histogram entity-name]
