@@ -13,7 +13,7 @@
 
 (def selection-boxes
   (assoc
-   (m/load-edn "selection-boxes.edn")
+   (m/load-edn "selection_box.edn")
    :curved-rail [[-2.5 -4.0] [2 4]]))
 
 (def selection-box-fallback [[-0.5 -0.5] [0.5 0.5]])
@@ -23,7 +23,7 @@
   (lookup selection-boxes entity-name selection-box-fallback))
 
 (def stack-sizes
-  (m/load-edn "stack-sizes.edn"))
+  (m/load-edn "stack_size.edn"))
 
 (defn stack-size
     [entity-name]

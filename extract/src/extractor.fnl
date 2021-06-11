@@ -31,9 +31,6 @@
 
 (local view (require :fennelview))
 
-(fn pr [m]
-    (print (view m)))
-
 (fn extract
     [key]
     (let [result {}]
@@ -43,5 +40,6 @@
                     (tset result ik (. iv key)))))
         result))
 
-{: pr
- : extract}
+(print
+    (view
+        (extract (. arg 1))))

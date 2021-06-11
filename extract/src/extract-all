@@ -1,5 +1,5 @@
 #!/bin/sh
 
-for extractor in selection-boxes stack-sizes; do
-    fennel "$extractor".fnl > /var/extract-result/"$extractor".edn
+for key in selection_box stack_size; do
+    fennel extractor.fnl "$key" > /var/extract-result/"$key".edn
 done
