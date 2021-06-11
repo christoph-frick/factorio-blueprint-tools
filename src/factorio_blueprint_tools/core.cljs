@@ -88,7 +88,7 @@
 (rum/defc ContentAbout < rum/static
   []
   (ant/layout-content
-   {:style {:padding "1ex 1em"}}
+   {:class "content"}
    [:div {:dangerouslySetInnerHTML {:__html (m/load-markdown "docs.md")}}]
    [:div
     [:h2 "Reporting Bugs"]
@@ -103,7 +103,7 @@
 (rum/defc ContentSettings < rum/static
   []
   (ant/layout-content
-   {:style {:padding "1ex 1em"}}
+   {:class "content"}
    [:h2 "Settings"]
    (ant/alert {:message "Currently there is no way to change or add mods etc. for the sizes occupied by the entities."
                :showIcon true
@@ -119,7 +119,7 @@
   rum/reactive
   [r]
   (ant/layout-content
-   {:style {:padding "1ex 1em"}}
+   {:class "content"}
    [:h2 "Tile a blueprint"]
    [:p "Arrange copies of the blueprint in a grid.  E.g. take a six electric miner blueprint and tile 15x15 to cover even the biggest resource fields" ]
    (ant/form
@@ -144,7 +144,7 @@
   rum/reactive
   [r]
   (ant/layout-content
-   {:style {:padding "1ex 1em"}}
+   {:class "content"}
    [:h2 "Mirror a blueprint"]
    [:p "Mirror the blueprint either vertically or horizontally"]
    (ant/form
@@ -166,7 +166,7 @@
   rum/reactive
   [r]
   (ant/layout-content
-   {:style {:padding "1ex 1em"}}
+   {:class "content"}
    [:h2 "Upgrade (or downgrade) a blueprint"]
    [:p "Decide what common upgradeable entities (e.g. inserters) to upgrade.  Also supports downgrading (e.g. you have a great blueprint but not the tech yet)"]
    (ant/form
@@ -189,7 +189,7 @@
   rum/reactive
   [r]
   (ant/layout-content
-   {:style {:padding "1ex 1em"}}
+   {:class "content"}
    [:h2 "Add landfill as tiles under a blueprint"]
    [:p "Put landfill under a blueprint"]
    (ant/alert {:message "Please note, that the modified blueprint can not be placed in one go in Factorio right now.  If there are entities on water, they can not be placed.  Force-place (shift) the blueprint to build the landfill and all placeable entities first, and once the landfill is in, place the blueprint again."
@@ -220,7 +220,7 @@
   rum/reactive
   [r]
   (ant/layout-content
-   {:style {:padding "1ex 1em"}}
+   {:class "content"}
    [:h2 "Splits a blueprint into multiple tiles"]
    [:p "Split a large blueprint into tiles to make it easier to place in game"]
    (ant/form
@@ -241,7 +241,7 @@
   rum/reactive
   [r]
   (ant/layout-content
-   {:style {:padding "1ex 1em"}}
+   {:class "content"}
    [:h2 "Create buffer chests"]
    [:p "Turn a blueprint into a blueprint for buffer chests requesting the initial blueprint"]
    (ant/alert {:message "This is currently under development"
@@ -265,7 +265,7 @@
   rum/reactive
   [r]
   (ant/layout-content
-   {:style {:padding "1ex 1em"}}
+   {:class "content"}
    [:h2 "Show the content of a blueprint"]
    (ant/form
     (BlueprintInput r :debug)
