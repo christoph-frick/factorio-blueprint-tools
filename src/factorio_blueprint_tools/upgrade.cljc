@@ -39,8 +39,7 @@
      [upgrade (peek chain)])))
 
 (def upgradables
-  (into
-   #{}
+  (set
    (keys upgrades-by-key)))
 
 (def upgrade-entity-path

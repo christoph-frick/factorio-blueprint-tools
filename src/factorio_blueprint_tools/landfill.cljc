@@ -17,7 +17,7 @@
 (defn landfill-area-to-tile-pos
   [area]
   (let [[[min-x min-y] [max-x max-y]] area]
-    (into #{}
+    (set
           (for [y (range (Math/floor min-y) (Math/ceil max-y) 1)
                 x (range (Math/floor min-x) (Math/ceil max-x) 1)]
             [(int x) (int y)]))))
@@ -31,7 +31,7 @@
 (defn landfill-sparse-tiles
   [blueprint]
   (if (blueprint/has-tiles? blueprint)
-    (into #{} (map blueprint/entity-coord (blueprint/tiles blueprint)))
+    (set (map blueprint/entity-coord (blueprint/tiles blueprint)))
     #{}))
 
 (defn landfill-full-entities

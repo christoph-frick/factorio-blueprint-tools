@@ -62,7 +62,7 @@
                                               :style {:height "10em" :width "calc(100% - 10em - 24px)"}
                                               :value (rum/react (citrus/subscription r [controller :input :encoded]))
                                               :onChange #(citrus/dispatch! r controller :set-blueprint (-> % .-target .-value))
-                                              :onFocus #(.select (-> % .-target))))
+                                              :onFocus #(.select (.-target %))))
                   (when-let [blueprint (rum/react (citrus/subscription r [controller :input :blueprint]))]
                     (BlueprintPreview blueprint))
                   (when-let [error (rum/react (citrus/subscription r [controller :input :error]))]
@@ -78,7 +78,7 @@
                                               :class "input-result-blueprint"
                                               :style {:height "10em" :width "calc(100% - 10em - 24px)"}
                                               :value (rum/react (citrus/subscription r [controller :output :encoded]))
-                                              :onFocus #(.select (-> % .-target))))
+                                              :onFocus #(.select (.-target %))))
                   (when-let [blueprint (rum/react (citrus/subscription r [controller :output :blueprint]))]
                     (when (:blueprint blueprint)
                       (BlueprintPreview blueprint)))]))

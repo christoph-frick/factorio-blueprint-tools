@@ -152,7 +152,7 @@
 
 (defn absolute-snapping?
   [blueprint]
-  (= true (some-> blueprint :blueprint :absolute-snapping)))
+  (true? (some-> blueprint :blueprint :absolute-snapping)))
 
 (defn snap
   "Configured snapping of a blueprint: :absolute, :snap, :default"
