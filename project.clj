@@ -12,7 +12,8 @@
                    [net.ofnir/antizer "3.26.17-1"]
                    [hiccups "0.3.0"]
                    [clj-commons/pushy "0.3.10"]
-                   [clj-commons/citrus "3.2.3"]]
+                   [clj-commons/citrus "3.2.3"]
+                   [cheshire "5.10.0"]]
 
     :plugins [[lein-figwheel "0.5.20"]
               [lein-cljsbuild "1.1.8" :exclusions [[org.clojure/clojure]]]]
