@@ -1,26 +1,41 @@
 (ns factorio-blueprint-tools.landfill
   (:require [factorio-blueprint-tools.blueprint :as blueprint]))
 
+(defn landfill-tile
+  [[x y]]
+  {:position {:x x :y y}
+   :name "landfill"})
+
+(defn sort-pos
+  [[ax ay] [bx by]]
+  (let [y (compare ay by)]
+    (if (zero? y)
+      (compare ax bx)
+      y)))
+
+(defn sorted-pos
+  [poss]
+  (apply sorted-set-by sort-pos poss))
+
 (defn set-landfill-tiles
   [blueprint poss]
-  (assoc-in blueprint
-            [:blueprint :tiles]
-            (for [[x y] (apply sorted-set-by
-                               (fn [[ax ay] [bx by]]
-                                 (let [y (compare ay by)]
-                                   (if (zero? y)
-                                     (compare ax bx)
-                                     y)))
-                               poss)]
-              {:position {:x x :y y} :name "landfill"})))
+  (blueprint/set-tiles blueprint
+                       (mapv landfill-tile
+                             (sorted-pos poss))))
+
+(defn min-max-range
+  [min max]
+  (range (Math/floor min)
+         (Math/ceil max)
+         1))
 
 (defn landfill-area-to-tile-pos
   [area]
   (let [[[min-x min-y] [max-x max-y]] area]
     (set
-          (for [y (range (Math/floor min-y) (Math/ceil max-y) 1)
-                x (range (Math/floor min-x) (Math/ceil max-x) 1)]
-            [(int x) (int y)]))))
+     (for [y (min-max-range min-y max-y)
+           x (min-max-range min-x max-x)]
+       [(int x) (int y)]))))
 
 (defn landfill-sparse-entities
   [blueprint]

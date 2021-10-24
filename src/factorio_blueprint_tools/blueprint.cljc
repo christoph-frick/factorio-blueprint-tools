@@ -27,10 +27,10 @@
                         direction))))
 
 (defn entity-area
-  [{:keys [name position direction] :as entity}]
+  [{:keys [name direction] :as entity}]
   (-> (sizes/selection-box name)
       (rotate-selection-box name direction)
-      (coord/translate-box (coord/coord (:x position) (:y position)))))
+      (coord/translate-box (entity-coord entity))))
 
 (defn has-items?
   [path blueprint]
@@ -63,6 +63,10 @@
 (defn tiles
   [blueprint]
   (s/select tiles-path blueprint))
+
+(defn set-tiles
+  [blueprint tiles]
+  (assoc-in blueprint tiles-get-in tiles))
 
 (defn area
   [box-extractor-fn items]
