@@ -16,8 +16,8 @@
                                    {:entity_number 10, :name "underground-belt", :position {:x 80.5, :y -52.5}, :type "input"}],
                         :item "blueprint",
                         :version 281474976710656}}
-        full (sut/landfill {:mode :full} bp)
-        sparse (sut/landfill {:mode :sparse} bp)]
+        full (sut/landfill {:fill-mode :full} bp)
+        sparse (sut/landfill {:fill-mode :sparse} bp)]
     (is (= 21 (count (-> full :blueprint :tiles))))
     (is (= (count (-> bp :blueprint :entities)) (count (-> sparse :blueprint :tiles))))))
 

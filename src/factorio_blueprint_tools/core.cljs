@@ -200,9 +200,9 @@
    (when (rum/react (citrus/subscription r [:landfill :input :blueprint]))
      (ant/form
       (ant/form-item {:label "Filling mode"}
-                     (ant/radio-group {:class "input-landfill-mode"
-                                       :value (rum/react (citrus/subscription r [:landfill :config :mode]))
-                                       :onChange #(citrus/dispatch! r :landfill :set-config :mode (-> % .-target .-value keyword))}
+                     (ant/radio-group {:class "input-landfill-fill-mode"
+                                       :value (rum/react (citrus/subscription r [:landfill :config :fill-mode]))
+                                       :onChange #(citrus/dispatch! r :landfill :set-config :fill-mode (-> % .-target .-value keyword))}
                                       (radio-options [[:full "Full" "(complete area/bounding box of blueprint)"]
                                                       [:sparse "Sparse" "(only under entities; keeps gap for pumps)"]])))
       (ant/form-item {:label "Existing tiles"}

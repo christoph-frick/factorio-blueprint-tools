@@ -49,30 +49,30 @@
 (declare to-book-1)
 
 (defn landfill-1
-  [mode tile-mode blueprint]
+  [fill-mode tile-mode blueprint]
   (if (= tile-mode :to-book)
-    (to-book-1 mode blueprint)
+    (to-book-1 fill-mode blueprint)
     (let [entitiies-dispatch {:full landfill-full-entities
                               :sparse landfill-sparse-entities}
           tiles-dispatch {:full landfill-full-tiles
                           :sparse landfill-sparse-tiles}
-          tiles ((entitiies-dispatch mode) blueprint)
+          tiles ((entitiies-dispatch fill-mode) blueprint)
           tiles (if (= tile-mode :replace)
-                  (into tiles ((tiles-dispatch mode) blueprint))
+                  (into tiles ((tiles-dispatch fill-mode) blueprint))
                   tiles)]
       (set-landfill-tiles blueprint tiles))))
 
 (defn to-book-1
-  [mode blueprint]
+  [fill-mode blueprint]
   (blueprint/book "Landfill"
                   [(update
-                    (landfill-1 mode :replace blueprint)
+                    (landfill-1 fill-mode :replace blueprint)
                     :blueprint
                     dissoc :entities)
                    blueprint]))
 
 (defn landfill
-  [{:keys [mode tile-mode] :or {mode :sparse tile-mode :replace}} blueprint-or-book]
+  [{:keys [fill-mode tile-mode] :or {fill-mode :sparse tile-mode :replace}} blueprint-or-book]
   (blueprint/map-blueprint-or-book
-   (partial landfill-1 mode tile-mode)
+   (partial landfill-1 fill-mode tile-mode)
    blueprint-or-book))
