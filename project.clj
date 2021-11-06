@@ -99,10 +99,10 @@
     ;; Setting up nREPL for Figwheel and ClojureScript dev
     ;; Please see:
     ;; https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl
-    :profiles {:kaocha {:dependencies [[lambdaisland/kaocha "1.0.937"]]}
+    :profiles {:kaocha {:dependencies [[lambdaisland/kaocha "1.60.945"]]}
                :dev {:dependencies [[binaryage/devtools "1.0.4"]
                                     [figwheel-sidecar "0.5.20"]
-                                    [cider/piggieback "0.5.2"]]
+                                    [cider/piggieback "0.5.3"]]
                      ;; need to add dev source path here to get user.clj loaded
                      :source-paths ["src" "dev"]
                      ;; for CIDER
