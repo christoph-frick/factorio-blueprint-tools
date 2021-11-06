@@ -75,3 +75,25 @@
       :to-book
       [:blueprint_book :blueprints 0 :blueprint :tiles]
       [[142 67] [145 70]])))
+
+(deftest test-landfill-offshore-pump
+  (let [bp {:blueprint {:entities [{:entity_number 1,
+                                    :name "offshore-pump",
+                                    :position {:x -23.5, :y 14.5},
+                                    :direction 6}],
+                        :item "blueprint"}}]
+    (are [dir tiles] (= tiles
+                        (->> (assoc-in bp [:blueprint :entities 0 :direction] dir)
+                             (sut/landfill {:fill-mode :sparse})
+                             :blueprint
+                             :tiles
+                             (map :position)
+                             set))
+      0 #{{:x -24, :y 14}
+          {:x -24, :y 15}}
+      2 #{{:x -24, :y 14}
+          {:x -25, :y 14}}
+      4 #{{:x -24, :y 14}
+          {:x -24, :y 13}}
+      6 #{{:x -24, :y 14}
+          {:x -23, :y 14}})))

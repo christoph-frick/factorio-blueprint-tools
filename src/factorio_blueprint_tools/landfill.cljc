@@ -1,5 +1,6 @@
 (ns factorio-blueprint-tools.landfill
-  (:require [factorio-blueprint-tools.blueprint :as blueprint]))
+  (:require [factorio-blueprint-tools.blueprint :as blueprint]
+            [factorio-blueprint-tools.coord :as coord]))
 
 (defn landfill-tile
   [[x y]]
@@ -25,8 +26,8 @@
 
 (defn min-max-range
   [min max]
-  (range (Math/floor min)
-         (Math/ceil max)
+  (range (Math/floor (Math/min min max))
+         (Math/ceil (Math/max min max))
          1))
 
 (defn landfill-area-to-tile-pos
@@ -37,10 +38,28 @@
            x (min-max-range min-x max-x)]
        [(int x) (int y)]))))
 
+(defmulti landfill-entity :name)
+
+(def offshore-pump-offsets
+  {0 [ 0  1]
+   2 [-1  0]
+   4 [ 0 -1]
+   6 [ 1  0]})
+
+(defmethod landfill-entity "offshore-pump"
+  [entity]
+  (let [pos (blueprint/entity-coord entity)
+        ofs (offshore-pump-offsets (:direction entity 0))]
+    (landfill-area-to-tile-pos [pos (coord/translate-coord pos ofs)])))
+
+(defmethod landfill-entity :default
+  [entity]
+  (-> entity blueprint/entity-area landfill-area-to-tile-pos))
+
 (defn landfill-sparse-entities
   [blueprint]
   (if-let [entites (blueprint/entities blueprint)]
-    (into #{} (mapcat (comp landfill-area-to-tile-pos blueprint/entity-area)) entites)
+    (into #{} (mapcat landfill-entity) entites)
     #{}))
 
 (defn landfill-sparse-tiles

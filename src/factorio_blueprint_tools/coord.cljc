@@ -44,6 +44,10 @@
 
 (def Y (coord 0 1))
 
+(def -X (coord -1 0))
+
+(def -Y (coord 0 -1))
+
 (defn box
   [[ax ay] [bx by]]
   [(coord (min ax bx) (min ay by))
