@@ -7,8 +7,8 @@
                    [org.clojure/clojurescript "1.11.60"]
                    ; [org.clojure/core.async  "0.3.443"]
                    [com.rpl/specter "1.1.4"]
-                   [markdown-clj "1.11.3"]
-                   [rum "0.12.9"]
+                   [markdown-clj "1.11.4"]
+                   [rum "0.12.10"]
                    [net.ofnir/antizer "3.26.17-1"]
                    [hiccups "0.3.0"]
                    [clj-commons/pushy "0.3.10"]
@@ -99,7 +99,7 @@
     ;; Setting up nREPL for Figwheel and ClojureScript dev
     ;; Please see:
     ;; https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl
-    :profiles {:kaocha {:dependencies [[lambdaisland/kaocha "1.70.1086"]]}
+    :profiles {:kaocha {:dependencies [[lambdaisland/kaocha "1.71.1119"]]}
                :dev {:dependencies [[binaryage/devtools "1.0.6"]
                                     [figwheel-sidecar "0.5.20"]
                                     [cider/piggieback "0.5.3"]]
