@@ -2,6 +2,7 @@
   (:require [factorio-blueprint-tools.blueprint :as blueprint]
             [goog.string]
             [goog.color]
+            #_:clj-kondo/ignore
             [hiccups.runtime :as hiccupsrt])
   (:require-macros [hiccups.core :as hiccups :refer [html]]))
 
