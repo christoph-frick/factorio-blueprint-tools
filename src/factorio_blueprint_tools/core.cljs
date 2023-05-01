@@ -46,9 +46,11 @@
 
 (rum/defc BlueprintPreview < rum/static
   [blueprint]
-  [:span
-   {:style {:padding-left "24px"}
-    :dangerouslySetInnerHTML {:__html (preview/preview blueprint)}}])
+  [:img {:style {:padding-left "16px"
+                 :position :absolute}
+         :title "Blueprint preview"
+         :src (str "data:image/svg+xml,"
+                   (js/encodeURIComponent (preview/preview blueprint)))}])
 
 (rum/defc BlueprintInput <
   rum/reactive
