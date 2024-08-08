@@ -1,5 +1,9 @@
 ## Changelog
 
+- `2024-08-08` | New feature: Add support to deny entities by name their landfill
+- `2021-11-06` | Bugfix: Add special handling for landfill under offshore-pump
+- `2021-06-11` | New feature: Allow clearing blueprint inputs
+- `2021-06-07` | New feature: Initial draft for creating buffer chest blueprints from blueprints
 - `2021-05-07` | Update      : Entities from Factorio 1.1
 - `2020-12-26` | New feature : More options for landfill to deal with tiles
 - `2020-11-12` | Bugfix      : Landfill for curved rails

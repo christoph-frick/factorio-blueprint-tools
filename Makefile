@@ -22,4 +22,7 @@ release:test
 resources/selection-boxes.edn:force
 	cd extract && ./extract.sh
 
+changelog: force
+	git log --date=format:'%Y-%m-%d'  --pretty='- `%ad` | Update: %s'
+
 force:
