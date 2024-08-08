@@ -93,7 +93,7 @@
                ;; :server-logfile false
                }
 
-    :aliases {"test-refresh" ["kaocha" "--watch"]
+    :aliases {"kw" ["kaocha" "--watch"]
               "kaocha" ["with-profile" "+kaocha" "run" "-m" "kaocha.runner"]}
 
     ;; Setting up nREPL for Figwheel and ClojureScript dev
