@@ -1,5 +1,6 @@
 (ns factorio-blueprint-tools.landfill
   (:require [factorio-blueprint-tools.blueprint :as blueprint]
+            [factorio-blueprint-tools.entity :as entity]
             [factorio-blueprint-tools.coord :as coord]))
 
 (defn landfill-tile
@@ -48,13 +49,13 @@
 
 (defmethod landfill-entity "offshore-pump"
   [entity]
-  (let [pos (blueprint/entity-coord entity)
+  (let [pos (entity/coord entity)
         ofs (offshore-pump-offsets (:direction entity 0))]
     (landfill-area-to-tile-pos [pos (coord/translate-coord pos ofs)])))
 
 (defmethod landfill-entity :default
   [entity]
-  (-> entity blueprint/entity-area landfill-area-to-tile-pos))
+  (-> entity entity/area landfill-area-to-tile-pos))
 
 (defn landfill-sparse-entities
   [blueprint]
@@ -65,7 +66,7 @@
 (defn landfill-sparse-tiles
   [blueprint]
   (if (blueprint/has-tiles? blueprint)
-    (set (map blueprint/entity-coord (blueprint/tiles blueprint)))
+    (set (map entity/coord (blueprint/tiles blueprint)))
     #{}))
 
 (defn landfill-full-entities

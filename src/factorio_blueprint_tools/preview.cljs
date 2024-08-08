@@ -1,10 +1,12 @@
 (ns factorio-blueprint-tools.preview
-  (:require [factorio-blueprint-tools.blueprint :as blueprint]
-            [goog.string]
-            [goog.color]
-            #_:clj-kondo/ignore
-            [hiccups.runtime :as hiccupsrt])
-  (:require-macros [hiccups.core :as hiccups :refer [html]]))
+    (:require
+        [factorio-blueprint-tools.blueprint :as blueprint]
+        [factorio-blueprint-tools.entity :as entity]
+        [goog.string]
+        [goog.color]
+        #_:clj-kondo/ignore
+        [hiccups.runtime :as hiccupsrt])
+    (:require-macros [hiccups.core :as hiccups :refer [html]]))
 
 (defn color-by-entity-name
   [entity-name]
@@ -36,14 +38,14 @@
       (when (seq tiles)
         [:g {:stroke "white" :stroke-width "0.05%" :opacity "50%"}
          (for [t tiles
-               :let [[x y] (blueprint/entity-coord t)]]
+               :let [[x y] (entity/coord t)]]
            [:g
             [:rect {:fill (color-by-entity-name-memoized (:name t)) :x x :y y :width 1 :height 1}]])])
 
       (when (seq entities)
         [:g
          (for [e entities
-               :let [[[x1 y1] [x2 y2]] (blueprint/entity-area e)
+               :let [[[x1 y1] [x2 y2]] (entity/area e)
                      width (- x2 x1)
                      height (- y2 y1)]]
            [:g {:stroke "black" :stroke-width "0.5%"}

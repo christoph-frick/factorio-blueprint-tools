@@ -1,10 +1,8 @@
 (ns factorio-blueprint-tools.split
-  (:require [factorio-blueprint-tools.coord :as coord]
-            [factorio-blueprint-tools.blueprint :as blueprint]))
-
-(defn entity-in-box?
-  [box entity]
-  (coord/in-box? box (blueprint/entity-coord entity)))
+    (:require
+        [factorio-blueprint-tools.coord :as coord]
+        [factorio-blueprint-tools.entity :as entity]
+        [factorio-blueprint-tools.blueprint :as blueprint]))
 
 (defn split
   [blueprint tile-size]
@@ -35,7 +33,7 @@
                               (update-in [:blueprint :entities]
                                          (fn [entities]
                                            (->> entities
-                                                (filter (partial entity-in-box? filter-box))
+                                                (filter (partial entity/in-box? filter-box))
                                                 (map #(blueprint/move-position % correction-x correction-y))
                                                 (blueprint/fix-entity-numbers)))))))]
       (blueprint/book (str label " " x-tiles " x " y-tiles) blueprints))))

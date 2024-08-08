@@ -1,5 +1,6 @@
 (ns factorio-blueprint-tools.mirror
   (:require [com.rpl.specter :as s]
+            [factorio-blueprint-tools.entity :as entity]
             [factorio-blueprint-tools.blueprint :as blueprint]))
 
 (defn- add-inverse
@@ -37,7 +38,7 @@
 
 (defn- mirror-direction
   [mapping direction]
-  (mapping (blueprint/force-direction direction)))
+  (mapping (entity/force-direction direction)))
 
 (def priority-mapping
   (add-inverse {"left" "right"}))

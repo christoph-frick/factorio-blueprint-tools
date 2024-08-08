@@ -1,6 +1,7 @@
 (ns factorio-blueprint-tools.landfill-test
   (:require [clojure.test :refer [deftest is are]]
             [factorio-blueprint-tools.blueprint :as blueprint]
+            [factorio-blueprint-tools.entity :as entity]
             [factorio-blueprint-tools.landfill :as sut]))
 
 (deftest test-full-sparse-happy-path
@@ -60,7 +61,7 @@
                         :item "blueprint"}}]
     (are [tile-mode path area] (= area
                                   (blueprint/area
-                                   blueprint/entity-pos-to-box
+                                   entity/pos-to-box
                                    (get-in
                                     (sut/landfill {:tile-mode tile-mode} bp)
                                     path)))

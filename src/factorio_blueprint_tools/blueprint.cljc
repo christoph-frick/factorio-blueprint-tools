@@ -1,5 +1,6 @@
 (ns factorio-blueprint-tools.blueprint
   (:require [com.rpl.specter :as s]
+            [factorio-blueprint-tools.entity :as entity]
             [factorio-blueprint-tools.sizes :as sizes]
             [factorio-blueprint-tools.coord :as coord]))
 
@@ -9,28 +10,6 @@
           (assoc entity :entity_number number))
         entities
         (iterate inc 1)))
-
-(defn force-direction
-  [direction]
-  (or direction 0))
-
-(defn entity-coord
-  [{:keys [position] :as _entity}]
-  (coord/coord (:x position) (:y position)))
-
-(defn rotate-selection-box
-  [selection-box name direction]
-  (let [direction (force-direction direction)]
-    (coord/rotate-box selection-box
-                      (if (and (= name "curved-rail") (odd? direction))
-                        (dec direction)
-                        direction))))
-
-(defn entity-area
-  [{:keys [name direction] :as entity}]
-  (-> (sizes/selection-box name)
-      (rotate-selection-box name direction)
-      (coord/translate-box (entity-coord entity))))
 
 (defn has-items?
   [path blueprint]
@@ -76,27 +55,22 @@
    coord/NIL-BOX
    items))
 
-(defn entity-pos-to-box
-  [entity]
-  (let [pos (entity-coord entity)]
-    (coord/box pos pos)))
-
 (defn positions-area
   [blueprint]
   (area
-   entity-pos-to-box
+   entity/pos-to-box
    (entities blueprint)))
 
 (defn entities-area
   [blueprint]
   (area
-   entity-area
+   entity/area
    (entities blueprint)))
 
 (defn tiles-area
   [blueprint]
   (area
-   #(let [pos (entity-coord %)]
+   #(let [pos (entity/coord %)]
       (coord/box
         pos
         (coord/translate-coord pos coord/ONE)))
