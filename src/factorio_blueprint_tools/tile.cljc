@@ -1,6 +1,5 @@
 (ns factorio-blueprint-tools.tile
-  (:require [com.rpl.specter :as s]
-            [factorio-blueprint-tools.blueprint :as blueprint]))
+  (:require [factorio-blueprint-tools.blueprint :as blueprint]))
 
 (defn width-and-height
   [blueprint]

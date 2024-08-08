@@ -1,6 +1,5 @@
 (ns factorio-blueprint-tools.split
-  (:require [com.rpl.specter :as s]
-            [factorio-blueprint-tools.coord :as coord]
+  (:require [factorio-blueprint-tools.coord :as coord]
             [factorio-blueprint-tools.blueprint :as blueprint]))
 
 (defn entity-in-box?

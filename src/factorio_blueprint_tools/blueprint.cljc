@@ -15,7 +15,7 @@
   (or direction 0))
 
 (defn entity-coord
-  [{:keys [position] :as entity}]
+  [{:keys [position] :as _entity}]
   (coord/coord (:x position) (:y position)))
 
 (defn rotate-selection-box
