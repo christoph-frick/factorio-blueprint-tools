@@ -98,3 +98,57 @@
           {:x -24, :y 13}}
       6 #{{:x -24, :y 14}
           {:x -23, :y 14}})))
+
+(deftest test-entity-deny
+  (let [bp {:blueprint {:entities
+                        [{:entity_number 1,
+                          :name "stone-wall",
+                          :position {:x 239.5, :y -149.5}}
+                         {:entity_number 2,
+                          :name "stone-wall",
+                          :position {:x 240.5, :y -149.5}}
+                         {:entity_number 3,
+                          :name "gate",
+                          :position {:x 241.5, :y -149.5},
+                          :direction 2}
+                         {:entity_number 4,
+                          :name "stone-wall",
+                          :position {:x 243.5, :y -149.5}}
+                         {:entity_number 5,
+                          :name "gate",
+                          :position {:x 242.5, :y -149.5},
+                          :direction 2}
+                         {:entity_number 6,
+                          :name "stone-wall",
+                          :position {:x 244.5, :y -149.5}}],
+                        :item "blueprint",
+                        :version 281479278821376}}]
+    (are [fill-mode entity-deny landfill-poss]
+
+         (= landfill-poss
+            (->> (sut/landfill {:fill-mode fill-mode
+                                :entity-deny entity-deny}
+                               bp)
+                 :blueprint
+                 :tiles
+                 (map :position)
+                 set))
+
+         :full #{} #{{:x 239, :y -150}
+                     {:x 240, :y -150}
+                     {:x 241, :y -150}
+                     {:x 242, :y -150}
+                     {:x 243, :y -150}
+                     {:x 244, :y -150}}
+         :full #{"stone-wall" "gate"} #{}
+         :sparse #{} #{{:x 239, :y -150}
+                       {:x 240, :y -150}
+                       {:x 241, :y -150}
+                       {:x 242, :y -150}
+                       {:x 243, :y -150}
+                       {:x 244, :y -150}}
+         :sparse #{"stone-wall" "gate"} #{}
+         :sparse #{"gate"} #{{:x 239, :y -150}
+                             {:x 240, :y -150}
+                             {:x 243, :y -150}
+                             {:x 244, :y -150}})))

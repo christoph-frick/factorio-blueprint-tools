@@ -3,6 +3,21 @@
             [factorio-blueprint-tools.entity :as entity]
             [factorio-blueprint-tools.coord :as coord]))
 
+(def entity-deny-options
+    #{"stone-wall" "gate"})
+
+(def default-entity-deny
+    entity-deny-options)
+
+(def default-config
+  {:fill-mode :full
+   :tile-mode :remove
+   :entity-deny default-entity-deny})
+
+(defn remove-entities-by-name
+  [name-set entities]
+  (remove (comp name-set :name) entities))
+
 (defn landfill-tile
   [[x y]]
   {:position {:x x :y y}
@@ -57,9 +72,13 @@
   [entity]
   (-> entity entity/area landfill-area-to-tile-pos))
 
+(defn entities
+  [entity-deny blueprint]
+  (remove-entities-by-name entity-deny (blueprint/entities blueprint)))
+
 (defn landfill-sparse-entities
-  [blueprint]
-  (if-let [entites (blueprint/entities blueprint)]
+  [entity-deny blueprint]
+  (if-let [entites (entities entity-deny blueprint)]
     (into #{} (mapcat landfill-entity) entites)
     #{}))
 
@@ -70,10 +89,11 @@
     #{}))
 
 (defn landfill-full-entities
-  [blueprint]
-  (if-let [area (blueprint/entities-area blueprint)]
-    (landfill-area-to-tile-pos area)
-    #{}))
+  [entity-deny blueprint]
+  (let [area (blueprint/area entity/area (entities entity-deny blueprint))]
+    (if (not= coord/NIL-BOX area)
+      (landfill-area-to-tile-pos area)
+      #{})))
 
 (defn landfill-full-tiles
   [blueprint]
@@ -84,30 +104,31 @@
 (declare to-book-1)
 
 (defn landfill-1
-  [fill-mode tile-mode blueprint]
+  [fill-mode tile-mode entity-deny blueprint]
   (if (= tile-mode :to-book)
-    (to-book-1 fill-mode blueprint)
+    (to-book-1 fill-mode entity-deny blueprint)
     (let [entitiies-dispatch {:full landfill-full-entities
                               :sparse landfill-sparse-entities}
           tiles-dispatch {:full landfill-full-tiles
                           :sparse landfill-sparse-tiles}
-          tiles ((entitiies-dispatch fill-mode) blueprint)
+          tiles ((entitiies-dispatch fill-mode) entity-deny blueprint)
           tiles (if (= tile-mode :replace)
                   (into tiles ((tiles-dispatch fill-mode) blueprint))
                   tiles)]
       (set-landfill-tiles blueprint tiles))))
 
 (defn to-book-1
-  [fill-mode blueprint]
+  [fill-mode entity-deny blueprint]
   (blueprint/book "Landfill"
                   [(update
-                    (landfill-1 fill-mode :replace blueprint)
+                    (landfill-1 fill-mode :replace entity-deny blueprint)
                     :blueprint
                     dissoc :entities)
                    blueprint]))
 
 (defn landfill
-  [{:keys [fill-mode tile-mode] :or {fill-mode :sparse tile-mode :replace}} blueprint-or-book]
-  (blueprint/map-blueprint-or-book
-   (partial landfill-1 fill-mode tile-mode)
-   blueprint-or-book))
+  [cfg blueprint-or-book]
+  (let [{:keys [fill-mode tile-mode entity-deny]} (merge default-config cfg)]
+    (blueprint/map-blueprint-or-book
+      (partial landfill-1 fill-mode tile-mode entity-deny)
+      blueprint-or-book)))

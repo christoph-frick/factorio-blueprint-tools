@@ -218,6 +218,13 @@
                                       (radio-options [[:remove "Remove" "(all tiles are removed)"]
                                                       [:replace "Replace" "(tiles are removed, but landfill is also added where tiles where honouring the filling mode)"]
                                                       [:to-book "Blueprint book" "(separate blueprint for landfill and original as book)"]])))
+      (ant/form-item {:label "Deny landfill for entities with name"}
+                     (ant/transfer {:class "input-landfill-entity-deny-mode"
+                                    :showSearch true
+                                    :render #(.-key %)
+                                    :dataSource (apply array (map #(js-obj "key" %) landfill-controller/entity-deny-options))
+                                    :targetKeys (rum/react (citrus/subscription r [:landfill :config :entity-deny]))
+                                    :onChange #(citrus/dispatch! r :landfill :set-config :entity-deny (set %))}))
       (BlueprintOutput r :landfill)))))
 
 ; Split
