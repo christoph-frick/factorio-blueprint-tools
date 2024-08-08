@@ -29,8 +29,8 @@
     (html
      [:svg
       {:xmlns "http://www.w3.org/2000/svg"
-       :width "10em"
-       :height "10em"
+       :width "160px"
+       :height "160px"
        :viewBox (str ax1 " " ay1 " " (- ax2 ax1) " " (- ay2 ay1))
        :style "vertical-align: top; outline: 1px solid #d9d9d9; background-color: #fff"}
       (when (seq tiles)

@@ -46,9 +46,7 @@
 
 (rum/defc BlueprintPreview < rum/static
   [blueprint]
-  [:img {:style {:padding-left "16px"
-                 :position :absolute}
-         :title "Blueprint preview"
+  [:img {:title "Blueprint preview"
          :src (str "data:image/svg+xml,"
                    (js/encodeURIComponent (preview/preview blueprint)))}])
 
@@ -58,10 +56,13 @@
   (ant/form-item {:label "Blueprint string"
                   :help "Copy a blueprint string from Factorio and paste it in this field"}
                  [:div
+                  {:style {:display :flex
+                           :gap "1ex"}}
                   (ant/input-text-area (assoc ta-no-spellcheck
                                               :class "input-blueprint"
                                               :allow-clear true
-                                              :style {:height "10em" :width "calc(100% - 10em - 24px)"}
+                                              :style {:height "160px"
+                                                      :flex-grow 1}
                                               :value (rum/react (citrus/subscription r [controller :input :encoded]))
                                               :onChange #(citrus/dispatch! r controller :set-blueprint (-> % .-target .-value))
                                               :onFocus #(.select (.-target %))))
@@ -76,9 +77,12 @@
   (ant/form-item {:label "Result"
                   :help "Copy this blueprint string and import in from the blueprint library in Factorio"}
                  [:div
+                  {:style {:display :flex
+                           :gap "1ex"}}
                   (ant/input-text-area (assoc ta-no-spellcheck
                                               :class "input-result-blueprint"
-                                              :style {:height "10em" :width "calc(100% - 10em - 24px)"}
+                                              :style {:height "160px"
+                                                      :flex-grow 1}
                                               :value (rum/react (citrus/subscription r [controller :output :encoded]))
                                               :onFocus #(.select (.-target %))))
                   (when-let [blueprint (rum/react (citrus/subscription r [controller :output :blueprint]))]
