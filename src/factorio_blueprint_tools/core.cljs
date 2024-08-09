@@ -132,16 +132,26 @@
     (BlueprintInput r :tile))
    (when (rum/react (citrus/subscription r [:tile :input :blueprint]))
      (ant/form
-      (ant/form-item {:label "Tiles on X axis"}
+      (ant/form-item {:label "Tiles on X/Y axis"}
                      (ant/input-number {:class "input-tile-x"
-                                        :value (rum/react (citrus/subscription r [:tile :config :tile-x]))
-                                        :onChange #(citrus/dispatch! r :tile :set-config :tile-x %)
-                                        :min 1}))
-      (ant/form-item {:label "Tiles on Y axis"}
+                                        :value (rum/react (citrus/subscription r [:tile :config :x-times]))
+                                        :onChange #(citrus/dispatch! r :tile :set-config :x-times %)
+                                        :min 1})
+                     " X "
                      (ant/input-number {:class "input-tile-y"
-                                        :value (rum/react (citrus/subscription r [:tile :config :tile-y]))
-                                        :onChange #(citrus/dispatch! r :tile :set-config :tile-y %)
+                                        :value (rum/react (citrus/subscription r [:tile :config :y-times]))
+                                        :onChange #(citrus/dispatch! r :tile :set-config :y-times %)
                                         :min 1}))
+      (ant/form-item {:label "Gap between entities on X/Y axis"}
+                     (ant/input-number {:class "input-offset-x"
+                                        :value (rum/react (citrus/subscription r [:tile :config :x-offset]))
+                                        :onChange #(citrus/dispatch! r :tile :set-config :x-offset %)
+                                        :min 0})
+                     " X "
+                     (ant/input-number {:class "input-offset-y"
+                                        :value (rum/react (citrus/subscription r [:tile :config :y-offset]))
+                                        :onChange #(citrus/dispatch! r :tile :set-config :y-offset %)
+                                        :min 0}))
       (BlueprintOutput r :tile)))))
 
 ; Mirror

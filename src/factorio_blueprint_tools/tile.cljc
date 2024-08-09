@@ -1,6 +1,12 @@
 (ns factorio-blueprint-tools.tile
   (:require [factorio-blueprint-tools.blueprint :as blueprint]))
 
+(def default-config
+  {:x-times 2
+   :x-offset 0
+   :y-times 2
+   :y-offset 0})
+
 (defn width-and-height
   [blueprint]
   (case (blueprint/snap blueprint)
@@ -34,16 +40,19 @@
    #(tile-items % x-times y-times width height)))
 
 (defn tile
-  [blueprint x-times y-times]
-  (if (blueprint/blueprint? blueprint)
-    (let [[width height] (width-and-height blueprint)]
-      (cond-> blueprint
-        (blueprint/has-entities? blueprint)
-        (tile-entities x-times y-times width height)
+  [config blueprint]
+  (let [{:keys [x-times y-times x-offset y-offset]} (merge default-config config)]
+    (if (blueprint/blueprint? blueprint)
+      (let [[width height] (width-and-height blueprint)
+            width (+ width x-offset)
+            height (+ height y-offset)]
+        (cond-> blueprint
+          (blueprint/has-entities? blueprint)
+          (tile-entities x-times y-times width height)
 
-        (blueprint/has-tiles? blueprint)
-        (tile-tiles x-times y-times width height)
+          (blueprint/has-tiles? blueprint)
+          (tile-tiles x-times y-times width height)
 
-        (not= :default (blueprint/snap blueprint))
-        (blueprint/set-snap-grid (* width x-times) (* width y-times))))
-    blueprint))
+          (not= :default (blueprint/snap blueprint))
+          (blueprint/set-snap-grid (* width x-times) (* width y-times))))
+      blueprint)))
