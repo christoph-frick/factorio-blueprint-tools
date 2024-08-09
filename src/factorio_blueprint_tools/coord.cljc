@@ -12,8 +12,8 @@
 (defn rotation-matrix-for-degree
   [alpha]
   (let [theta (* alpha (/ Math/PI 180.0))]
-    [[(Math/cos theta) (Math/sin theta)]
-     [(* -1.0 (Math/sin theta)) (Math/cos theta)]]))
+    [[(Math/cos theta) (- (Math/sin theta))]
+     [(Math/sin theta) (Math/cos theta)]]))
 
 (def rotation-matrices
   (into {}
@@ -64,10 +64,10 @@
 
 (defn rotate-coord
   [[x y] dir]
-  (let [[[a b] [c d]] (rotation-matrices (or dir 0))]
+  (let [[[m00 m10] [m01 m11]] (rotation-matrices (or dir 0))]
     (coord
-     (+ (* x a) (* y b))
-     (+ (* x c) (* y d)))))
+     (+ (* x m00) (* y m10))
+     (+ (* x m01) (* y m11)))))
 
 (defn translate-coord
   [[x y] [v t]]
