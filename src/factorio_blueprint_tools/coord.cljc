@@ -55,9 +55,6 @@
 
 (def NIL-BOX [[nil nil] [nil nil]])
 
-(defn box-from-size
-  [[x y] width height]
-  (box (coord x y) (coord (+ x width) (+ y height))))
 (defn nil-box?
   [b]
   (= NIL-BOX b))
@@ -74,6 +71,12 @@
   (coord
    (+ x v)
    (+ y t)))
+
+(defn box-from-size
+  [base width height]
+  (box base
+       (translate-coord base
+                        (coord width height))))
 
 (defn rotate-box
   [[a b] dir]
