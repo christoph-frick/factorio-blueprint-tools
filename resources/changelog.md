@@ -1,5 +1,7 @@
 ## Changelog
 
+- `2024-08-09` | New features: Allow for configuration of gaps between tiles
+- `2024-08-09` | Bugfix: Generate proper bounding box for 45 degree rotated entities like diagonal rails
 - `2024-08-08` | New feature: Add support to deny entities by name their landfill
 - `2021-11-06` | Bugfix: Add special handling for landfill under offshore-pump
 - `2021-06-11` | New feature: Allow clearing blueprint inputs
