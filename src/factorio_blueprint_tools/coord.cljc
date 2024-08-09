@@ -18,7 +18,7 @@
 (def rotation-matrices
   (into {}
         (map (fn [dir]
-               [dir (rotation-matrix-for-degree (* dir 45))]))
+               [dir (rotation-matrix-for-degree (- (* dir 45)))]))
         (vals directions)))
 
 (defn coord
