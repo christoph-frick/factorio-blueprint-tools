@@ -103,8 +103,8 @@
  :iron-stick 100
  :item-unknown 1
  :item-with-inventory 1
- :item-with-label 1
- :item-with-tags 1
+ :item-with-label 2
+ :item-with-tags 2
  :lab 10
  :land-mine 100
  :landfill 100
@@ -208,7 +208,7 @@
  :substation 50
  :sulfur 50
  :tank 1
- :tank-cannon 5
+ :tank-cannon 1
  :tank-flamethrower 1
  :tank-machine-gun 1
  :train-stop 10
