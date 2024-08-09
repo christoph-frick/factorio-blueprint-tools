@@ -29,7 +29,7 @@
                       "/var/factorio-blueprint-tools/?.lua"))
 (require :base.data)
 
-(local view (require :fennelview))
+(local fennel (require :fennel))
 
 (fn extract
     [key]
@@ -41,5 +41,5 @@
         result))
 
 (print
-    (view
+    (fennel.view
         (extract (. arg 1))))
