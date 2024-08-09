@@ -58,6 +58,9 @@
 (defn box-from-size
   [[x y] width height]
   (box (coord x y) (coord (+ x width) (+ y height))))
+(defn nil-box?
+  [b]
+  (= NIL-BOX b))
 
 (defn rotate-coord
   [[x y] dir]
@@ -92,7 +95,7 @@
 
 (defn union-box
   [b1 b2]
-  (if (= NIL-BOX b1)
+  (if (nil-box? b1)
     b2
     (let [[[ax1 ay1] [ax2 ay2]] b1
           [[bx1 by1] [bx2 by2]] b2]

@@ -91,7 +91,7 @@
 (defn landfill-full-entities
   [entity-deny blueprint]
   (let [area (blueprint/area entity/area (entities entity-deny blueprint))]
-    (if (not= coord/NIL-BOX area)
+    (if (not (coord/nil-box? area))
       (landfill-area-to-tile-pos area)
       #{})))
 
