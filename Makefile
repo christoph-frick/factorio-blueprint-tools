@@ -1,10 +1,12 @@
 all: release
 
 build-release: force
-	lein do clean, cljsbuild once min
+	./shadow-cljsw release app
+	rsync -av --delete resources/public/factorio-blueprint-tools/ docs/
+	cp target/factorio-blueprint-tools/main.js docs/
 
 build-functionaltest:build-release
-	rsync -av --delete resources/public/ functionaltest/public/
+	rsync -av --delete docs/ functionaltest/public/factorio-blueprint-tools/
 
 quick-run-functionaltest: force
 	cd functionaltest && docker-compose pull && docker-compose run --rm test-runner && docker-compose down
@@ -12,14 +14,13 @@ quick-run-functionaltest: force
 run-functionaltest:build-functionaltest quick-run-functionaltest
 
 run-test:force
-	lein do clean, test
+	./cljw -M:test
 
 test:run-test run-functionaltest
 
 release:test
-	rsync -av --delete resources/public/factorio-blueprint-tools/ docs/
 
-resources/selection-boxes.edn:force
+extract:force
 	cd extract && ./extract.sh
 
 changelog: force

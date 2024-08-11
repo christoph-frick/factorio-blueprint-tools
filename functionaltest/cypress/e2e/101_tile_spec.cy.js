@@ -2,7 +2,7 @@ describe('Tile', function() {
 	beforeEach(function() {
 		cy.fixture("blueprints.json").as("blueprints")
 		cy.fixture("tile_results.json").as("results")
-		cy.goto(".menu-tile", "Tile")
+		cy.goto("tile", "Tile")
 	})
 	it('Tile the belts 2x2', function() {
 		cy.pasteBlueprint(this.blueprints.with_tiles)

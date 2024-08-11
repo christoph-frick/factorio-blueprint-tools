@@ -2,7 +2,7 @@ describe('Split', function() {
 	beforeEach(function() {
 		cy.fixture("blueprints.json").as("blueprints")
 		cy.fixture("split_results.json").as("results")
-		cy.goto(".menu-split", "Split")
+		cy.goto("split", "Split")
 	})
 	it('Split a huge blueprint into 2x2', function() {
 		cy.pasteBlueprint(this.blueprints.huge)

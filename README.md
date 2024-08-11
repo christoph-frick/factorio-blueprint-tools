@@ -7,4 +7,9 @@ Online version: https://christoph-frick.github.io/factorio-blueprint-tools/
 
 [Documentation and Features](resources/docs.md) and [Changelog](resources/changelog.md)
 
-Copyright © 2021 Christoph Frick <https://github.com/christoph-frick/factorio-blueprint-tools>
+## Development
+
+Run local: `./shadow-cljsw watch app` the visit
+http://localhost:3449/factorio-blueprint-tools/index.html
+
+Copyright © 2024 Christoph Frick <https://github.com/christoph-frick/factorio-blueprint-tools>

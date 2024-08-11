@@ -1,0 +1,10 @@
+#!/bin/sh
+entrypoint=$(basename "$0" w)
+docker-compose \
+	run \
+	-u "$(id -u):$(id -g)" \
+	--rm \
+	--service-ports \
+	build \
+	"$entrypoint" \
+	"$@"

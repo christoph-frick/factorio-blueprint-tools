@@ -1,0 +1,13 @@
+{:deps {org.clojure/clojure {:mvn/version "1.11.4"}
+        org.clojure/clojurescript {:mvn/version "1.11.132"}
+        com.rpl/specter {:mvn/version "1.1.4"}
+        markdown-clj/markdown-clj {:mvn/version "1.12.1"}
+        rum/rum {:mvn/version "0.12.11"}
+        hiccups/hiccups {:mvn/version "0.3.0"}
+        clj-commons/pushy {:mvn/version "0.3.10"}
+        clj-commons/citrus {:mvn/version "3.3.0"}
+        cheshire/cheshire {:mvn/version "5.13.0"}}
+ :paths ["src" "resources"]
+ :aliases {:test {:main-opts ["-m" "kaocha.runner"]
+                  :extra-deps {lambdaisland/kaocha {:mvn/version "1.91.1392"}}}
+           :shadow-cljs {:extra-deps {thheller/shadow-cljs {:mvn/version "2.28.12"}}}}}

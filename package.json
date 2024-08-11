@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "antd": "^5.20.1",
+    "pako": "^2.1.0",
+    "shadow-cljs": "^2.23.1"
+  }
+}

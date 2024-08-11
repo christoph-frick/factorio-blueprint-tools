@@ -4,6 +4,6 @@
           :ns-patterns [".*"]}]
  :plugins [:kaocha.plugin/profiling
            :kaocha.plugin/notifier]
- :kaocha.plugin.notifier/command "terminal-notifier -message '%{message}' -title '%{title}'"
+ :kaocha.plugin.notifier/command nil #_ "terminal-notifier -message '%{message}' -title '%{title}'" ; TODO
  :kaocha.plugin.profiling/count 3
  :kaocha.plugin.profiling/profiling? true}

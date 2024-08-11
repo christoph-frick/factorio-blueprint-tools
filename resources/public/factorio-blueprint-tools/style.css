@@ -1,0 +1,18 @@
+body {
+    margin: 0;
+}
+
+div.root-layout {
+    height: 100dvh;
+    width: 100dvw;
+}
+
+h1 {
+    margin: 0;
+}
+
+.content {
+    padding: 0 16px;
+    overflow: auto;
+    height: auto;
+}

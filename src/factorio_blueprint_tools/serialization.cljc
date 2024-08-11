@@ -3,6 +3,7 @@
                     [clojure.java.io :as io]
                     [clojure.string :as str])
      :cljs (:require [goog.crypt.base64 :as b64]
+                     ["pako" :as pako]
                      [clojure.string :as str]))
   #?(:clj (:import (java.util.zip InflaterInputStream DeflaterOutputStream)
                    (java.io ByteArrayOutputStream)
@@ -44,7 +45,7 @@
 (defn b64-encode
   [blueprint]
   #?(:clj (.encodeToString (Base64/getEncoder) blueprint)
-     :cljs (b64/encodeString blueprint)))
+     :cljs (b64/encodeByteArray blueprint)))
 
 (defn b64-decode
   [blueprint-string]
@@ -58,12 +59,12 @@
                 deflater (DeflaterOutputStream. blueprint-os)]
             (spit deflater blueprint)
             (.toByteArray blueprint-os))
-     :cljs (js/pako.deflate blueprint #js{:to "string"})))
+     :cljs (pako/deflate blueprint #js{:to "string"})))
 
 (defn zlib-inflate
   [blueprint-string]
   #?(:clj (-> blueprint-string io/input-stream InflaterInputStream. slurp)
-     :cljs (js/pako.inflate blueprint-string #js{:to "string"})))
+     :cljs (pako/inflate blueprint-string #js{:to "string"})))
 
 
 (defn encode-pre-process
